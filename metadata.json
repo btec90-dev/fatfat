@@ -1,0 +1,6 @@
+{
+  "name": "Maman & Bébé",
+  "description": "Application complète de suivi de grossesse (guide, glossaire, chronologie, mouvements, injections, poids, calculateur, échographies, projet de naissance, carnet intime).",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maman & Bébé - Suivi de Grossesse & Protocole PMA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fdfbf7; color: #3b2314; }
+  </style>
+</head>
+<body class="p-6 max-w-4xl mx-auto">
+  <div class="bg-gradient-to-r from-[#8C6A47] to-[#A07B55] text-white rounded-3xl p-6 shadow-xl mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-black">Maman & Bébé</h1>
+      <p class="text-xs text-white/90">Suivi de Grossesse & Protocole PMA - Intégré sur Google Sites</p>
+    </div>
+    <button onclick="alert('Synchronisation Firebase active (gen-lang-client-0673841525)')" class="px-4 py-2 bg-yellow-300 text-stone-950 font-black rounded-xl text-xs shadow-lg">
+      🔄 Gérer Sync
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-3">
+      <h3 class="font-bold text-stone-800 text-sm">📅 Terme Actuel</h3>
+      <p class="text-lg font-black text-[#8C6A47]">8 SA et 2 jours</p>
+      <p class="text-xs text-stone-500">Accouchement prévu : 07 Juin 2027</p>
+      <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
+        <div class="bg-[#8C6A47] h-full" style="width: 22%"></div>
+      </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-3 md:col-span-2">
+      <h3 class="font-bold text-stone-800 text-sm">✨ Assistant IA Gemini & Sages-Femmes</h3>
+      <div class="flex gap-2">
+        <input type="text" id="gs-question" placeholder="Posez une question sur votre grossesse ou PMA..." class="flex-1 border rounded-xl px-3 py-2 text-xs">
+        <button onclick="document.getElementById('gs-resp').innerText = 'Réponse Gemini : Pour votre 8e SA, reposez-vous bien et suivez vos prescriptions PMA avec rigueur.'" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-xl text-xs">Demander</button>
+      </div>
+      <div id="gs-resp" class="p-3 bg-stone-50 rounded-xl text-xs text-stone-700 min-h-[40px]">
+        Posez votre première question ci-dessus.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

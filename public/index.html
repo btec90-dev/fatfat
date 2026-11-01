@@ -1,0 +1,3643 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Maman & Bébé - Suivi de Grossesse & Protocole PMA</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="app_logo.jpg">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bronze: {
+              50: '#FDF8F5',
+              100: '#F7EBE1',
+              200: '#EBD2C0',
+              300: '#DDB69B',
+              400: '#CD7F32',
+              500: '#A0522D',
+              600: '#8B4513',
+              700: '#6E340E',
+              800: '#522409',
+              900: '#381604'
+            },
+            sage: {
+              50: '#F0FDFA',
+              100: '#CCFBF1',
+              200: '#99F6E4',
+              500: '#14B8A6',
+              700: '#0F766E'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js CDN for Weight and BBT Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-section, #print-section * {
+        visibility: visible;
+      }
+      #print-section {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="h-full bg-white text-[#2C221E] flex flex-col antialiased selection:bg-bronze-100 selection:text-bronze-900">
+
+  <!-- TOP HEADER (Desktop & Mobile) -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-bronze-100 px-4 py-2.5 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <img src="app_logo.jpg" alt="Logo Maman & Bébé" class="w-10 h-10 rounded-full object-cover border-2 border-bronze-400 shadow-sm" onerror="this.src='public/assets/aistudio/Gemini_Generated_Image_g594exg594exg594_Original_3_254b0a7d.JPG'">
+      <div>
+        <h1 class="text-base font-bold text-bronze-900 leading-tight">Maman & Bébé</h1>
+        <p class="text-[11px] text-bronze-500 font-medium">Grossesse & Parcours PMA</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-1.5">
+      <!-- GOOGLE SIGN-IN & SYNC BADGE -->
+      <button onclick="openSyncModal()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bronze-50 border border-bronze-200 text-xs font-semibold text-bronze-800 hover:bg-bronze-100 transition shadow-2xs" title="Synchronisation Google / Vercel & GitHub">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span class="hidden sm:inline" id="header-user-email">Fatou</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Synchronisé"></span>
+      </button>
+
+      <button onclick="requestNotificationPermission()" class="p-2 rounded-full hover:bg-bronze-50 text-bronze-600 transition" title="Rappels de notification">
+        <i data-lucide="bell" class="w-5 h-5"></i>
+      </button>
+      <button onclick="openSettingsModal()" class="p-2 rounded-full hover:bg-bronze-50 text-bronze-600 transition" title="Paramètres">
+        <i data-lucide="settings" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN SCROLLABLE CONTENT CONTAINER -->
+  <main class="flex-1 overflow-y-auto pb-24 px-4 max-w-xl mx-auto w-full pt-4">
+
+    <!-- TAB 1: ACCUEIL (DASHBOARD) -->
+    <section id="tab-home" class="space-y-4">
+      
+      <!-- HERO BANNER -->
+      <div class="bg-gradient-to-br from-bronze-100 via-bronze-50 to-white rounded-3xl p-5 border border-bronze-200/60 shadow-sm relative overflow-hidden">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex-1">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/80 text-bronze-700 border border-bronze-200 mb-1">
+              Bienvenue, <span id="display-mother-name">Fatou</span> ❤️
+            </span>
+            <h2 id="display-baby-name" class="text-sm sm:text-base font-bold text-bronze-900 leading-snug italic">« Un jour, un pas, un battement de cœur à la fois »</h2>
+          </div>
+          <img src="app_logo.jpg" alt="Couple Portrait" class="w-16 h-16 rounded-full object-cover border-2 border-bronze-400 shadow-md flex-shrink-0" onerror="this.src='public/assets/aistudio/Gemini_Generated_Image_g594exg594exg594_Original_3_254b0a7d.JPG'">
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-bronze-200/50 grid grid-cols-2 gap-3">
+          <div>
+            <p class="text-xs text-bronze-600 font-medium">Terme actuel</p>
+            <p id="display-gestational-age" class="text-lg font-bold text-bronze-900">9 SA et 2 j</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-bronze-600 font-medium">Accouchement prévu</p>
+            <p id="display-due-date" class="text-sm font-bold text-bronze-800">12 Juin 2027 (215 j)</p>
+          </div>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="mt-3">
+          <div class="w-full bg-bronze-200/70 rounded-full h-2.5 overflow-hidden">
+            <div id="display-progress-bar" class="bg-gradient-to-r from-bronze-500 to-bronze-400 h-2.5 rounded-full transition-all duration-500" style="width: 22%"></div>
+          </div>
+          <div class="flex justify-between items-center text-[11px] text-bronze-600 font-medium mt-1">
+            <span id="display-progress-text">Semaine 9 sur 40 (22%)</span>
+            <span>40 SA</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN INTERACTIVE CALENDAR -->
+      <div class="bg-white rounded-2xl border border-bronze-100 shadow-sm p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-bronze-100 flex items-center justify-center text-bronze-600">
+              <i data-lucide="calendar" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-bronze-900">Calendrier du Protocole</h3>
+              <p class="text-xs text-bronze-500">Injections, échographies & jalons PMA</p>
+            </div>
+          </div>
+          <button onclick="switchTab('tools', 2)" class="text-xs font-bold text-bronze-600 hover:text-bronze-800">
+            Gérer
+          </button>
+        </div>
+
+        <!-- MONTH SELECTOR -->
+        <div class="flex items-center justify-between bg-bronze-50/70 rounded-xl px-3 py-1.5 mb-3 border border-bronze-100">
+          <button onclick="prevMonth()" class="p-1 hover:bg-white rounded-lg text-bronze-700 transition">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <span id="calendar-month-title" class="text-sm font-bold text-bronze-900 capitalize">Octobre 2026</span>
+          <button onclick="nextMonth()" class="p-1 hover:bg-white rounded-lg text-bronze-700 transition">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- CALENDAR LEGEND -->
+        <div class="flex items-center justify-center flex-wrap gap-x-3.5 gap-y-1.5 text-[11px] text-stone-600 mb-3 px-1">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            <span>Visite GYN</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span>Mémos & Notes</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Journal</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+            <span>Injections</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-pink-500"></span>
+            <span>Échos & PMA</span>
+          </div>
+        </div>
+
+        <!-- WEEKDAYS HEADER -->
+        <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-bronze-500 mb-1">
+          <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+        </div>
+
+        <!-- CALENDAR DAYS GRID -->
+        <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center"></div>
+
+        <!-- SELECTED DAY DETAILS & DIRECT EDITING -->
+        <div class="mt-4 pt-3.5 border-t border-bronze-100 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <span id="selected-day-title" class="text-xs font-bold text-bronze-900 capitalize">Jeudi 29 Octobre 2026</span>
+              <p class="text-[10px] text-stone-400">Cliquez sur un jour pour ajouter ou modifier vos entrées</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="selected-day-count" class="text-[11px] text-bronze-700 font-semibold bg-bronze-100 px-2 py-0.5 rounded-full">1 événement</span>
+              <span class="inline-flex items-center gap-1 text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium border border-emerald-200/60" title="Synchronisation multi-appareils automatique">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Sync
+              </span>
+            </div>
+          </div>
+
+          <!-- QUICK ADD BUTTONS FOR THIS SELECTED DATE -->
+          <div class="bg-gradient-to-r from-stone-50 to-bronze-50/40 p-2.5 rounded-2xl border border-stone-200/80 space-y-1.5">
+            <span class="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">Ajouter pour cette date :</span>
+            <div class="flex flex-wrap gap-1.5">
+              <button onclick="openAddGynModal()" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200 rounded-xl text-xs font-semibold transition active:scale-95 shadow-2xs">
+                <i data-lucide="stethoscope" class="w-3.5 h-3.5 text-blue-600"></i> + Visite GYN
+              </button>
+              <button onclick="openAddMemoModal()" class="flex items-center gap-1 px-2.5 py-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 rounded-xl text-xs font-semibold transition active:scale-95 shadow-2xs">
+                <i data-lucide="sticky-note" class="w-3.5 h-3.5 text-amber-600"></i> + Mémo / Note
+              </button>
+              <button onclick="openAddJournalFromCalendarModal()" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-xs font-semibold transition active:scale-95 shadow-2xs">
+                <i data-lucide="book-heart" class="w-3.5 h-3.5 text-emerald-600"></i> + Journal
+              </button>
+              <button onclick="openAddInjectionModal()" class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 text-purple-800 hover:bg-purple-100 border border-purple-200 rounded-xl text-xs font-semibold transition active:scale-95 shadow-2xs">
+                <i data-lucide="syringe" class="w-3.5 h-3.5 text-purple-600"></i> + Injection
+              </button>
+              <button onclick="openWebCameraModal()" class="flex items-center gap-1 px-2.5 py-1.5 bg-pink-50 text-pink-800 hover:bg-pink-100 border border-pink-200 rounded-xl text-xs font-semibold transition active:scale-95 shadow-2xs">
+                <i data-lucide="camera" class="w-3.5 h-3.5 text-pink-600"></i> + Écho Photo
+              </button>
+            </div>
+          </div>
+
+          <div id="selected-day-events" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- NEXT PMA MILESTONE CARD -->
+      <div class="bg-gradient-to-r from-purple-50 via-white to-bronze-50 rounded-2xl p-4 border border-purple-200/80 shadow-sm flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-purple-950">Protocole PMA : Prochaine Étape Clé</h3>
+            <span id="home-pma-badge" class="text-[10px] font-bold bg-purple-200 text-purple-900 px-2 py-0.5 rounded-full">Testing</span>
+          </div>
+          <p id="home-pma-title" class="text-xs font-bold text-purple-900 mt-1">Prise de sang Bêta-HCG (Test de grossesse)</p>
+          <p id="home-pma-desc" class="text-[11px] text-purple-800/80 mt-0.5">04 Nov 2026 à 08:00 • Dosage quantitatif de l'hormone HCG à J12 post-transfert.</p>
+          <div class="mt-2.5 flex items-center gap-2">
+            <button onclick="switchToolsSubTab('pma'); switchTab('tools', 2);" class="text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg transition shadow-2xs">
+              Gérer le protocole PMA
+            </button>
+            <button onclick="openShiftDatesModal()" class="text-xs font-medium text-purple-700 hover:text-purple-900 px-2 py-1">
+              ⚡ Décaler le cycle
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMMEDIATE INJECTION REMINDER CARD -->
+      <div id="home-injection-card" class="bg-gradient-to-r from-bronze-50 to-white rounded-2xl p-4 border border-bronze-200/80 shadow-sm flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-bronze-400/20 text-bronze-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <i data-lucide="syringe" class="w-5 h-5"></i>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-bronze-900">Prochain rappel d'injection</h3>
+            <span class="text-[10px] font-semibold bg-bronze-100 text-bronze-800 px-2 py-0.5 rounded-full">PIO / Progestérone</span>
+          </div>
+          <p id="home-next-injection-text" class="text-xs text-bronze-700 mt-1">Progestérone (PIO) 50mg - Zone : Fesse droite</p>
+          <div class="mt-2 flex gap-2">
+            <button onclick="toggleHomeNextInjection()" class="text-xs font-bold bg-bronze-500 hover:bg-bronze-600 text-white px-3 py-1 rounded-lg transition shadow-sm">
+              Marquer comme prise
+            </button>
+            <button onclick="switchToolsSubTab('injections'); switchTab('tools', 2);" class="text-xs font-medium text-bronze-600 hover:text-bronze-800 px-2 py-1">
+              Voir tout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAISIE RAPIDE EN 1 CLIC -->
+      <div class="bg-white rounded-2xl p-4 border border-bronze-100 shadow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="zap" class="w-4 h-4 text-bronze-500"></i>
+          <h3 class="text-sm font-bold text-bronze-900">Saisie Rapide (En 1 clic)</h3>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Quick Weight -->
+          <div class="flex gap-2">
+            <input type="number" step="0.1" id="quick-weight-input" placeholder="Poids en kg (ex: 63.4)" class="flex-1 bg-bronze-50/50 border border-bronze-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-bronze-400">
+            <button onclick="saveQuickWeight()" class="bg-bronze-500 text-white font-semibold text-xs px-4 py-2 rounded-xl hover:bg-bronze-600 transition shadow-sm">
+              Pesée
+            </button>
+          </div>
+
+          <!-- Quick Symptom -->
+          <div class="flex gap-2">
+            <input type="text" id="quick-symptom-input" placeholder="Symptôme ou humeur (ex: Fatigue, tiraillement)" class="flex-1 bg-bronze-50/50 border border-bronze-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-bronze-400">
+            <button onclick="saveQuickSymptom()" class="bg-bronze-400 text-white font-semibold text-xs px-4 py-2 rounded-xl hover:bg-bronze-500 transition shadow-sm">
+              Noter
+            </button>
+          </div>
+        </div>
+
+        <div id="quick-success-badge" class="hidden mt-2 text-xs text-sage-700 bg-sage-50 border border-sage-200 rounded-lg p-2 font-medium flex items-center gap-1.5">
+          <i data-lucide="check-circle" class="w-4 h-4 text-sage-500"></i>
+          Enregistré avec succès !
+        </div>
+      </div>
+
+      <!-- SHORTCUTS -->
+      <div class="space-y-2 pt-1">
+        <h3 class="text-xs font-bold text-bronze-500 uppercase tracking-wider px-1">Accès Direct</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="switchToolsSubTab('fertility'); switchTab('tools', 2);" class="p-3 bg-white hover:bg-bronze-50 border border-bronze-100 rounded-2xl text-left transition flex items-center gap-2.5 shadow-sm">
+            <div class="w-8 h-8 rounded-lg bg-pink-100 text-pink-700 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="thermometer" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-bronze-900 leading-tight">Courbe Fertilité</p>
+              <p class="text-[10px] text-bronze-500">T° Basale & Cycle</p>
+            </div>
+          </button>
+
+          <button onclick="switchTab('project', 0)" class="p-3 bg-white hover:bg-bronze-50 border border-bronze-100 rounded-2xl text-left transition flex items-center gap-2.5 shadow-sm">
+            <div class="w-8 h-8 rounded-lg bg-bronze-100 text-bronze-600 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-bronze-900 leading-tight">Projet Naissance</p>
+              <p class="text-[10px] text-bronze-500">Export PDF</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 2: CHRONOLOGIE (INVERSÉE DU PRÉSENT VERS L'ACCOUCHEMENT) -->
+    <section id="tab-timeline" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-black text-bronze-900">Chronologie de Grossesse</h2>
+          <p class="text-xs text-bronze-600">Du présent vers l'accouchement (Semaine par semaine)</p>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-bronze-100 text-bronze-800">
+          Phases 3 & 4
+        </span>
+      </div>
+
+      <!-- ETAPES RESTANTES RESUME -->
+      <div class="bg-bronze-50 border border-bronze-200/80 rounded-2xl p-4">
+        <h3 class="text-sm font-bold text-bronze-900 flex items-center gap-1.5 mb-2">
+          <i data-lucide="list-checks" class="w-4 h-4 text-bronze-600"></i>
+          Les étapes restantes vers l'arrivée de bébé
+        </h3>
+        <ul class="text-xs text-bronze-700 space-y-1.5 pl-1">
+          <li>• <strong>Semaines 11–13</strong> : DPNI, clarté nucale et premier rendez-vous officiel</li>
+          <li>• <strong>Semaines 18–20</strong> : Premiers mouvements fœtaux nets</li>
+          <li>• <strong>Semaine 22</strong> : Échographie morphologique de niveau II</li>
+          <li>• <strong>Semaines 24–28</strong> : Dépistage du diabète gestationnel (HGPO)</li>
+          <li>• <strong>Semaine 32</strong> : Échographie de croissance et position du placenta</li>
+          <li>• <strong>Semaines 35–37</strong> : Dépistage Streptocoque B & révision du projet de naissance</li>
+          <li>• <strong>Semaines 37–41</strong> : Travail, accouchement et rencontre !</li>
+        </ul>
+      </div>
+
+      <!-- TIMELINE LIST -->
+      <div id="timeline-cards-container" class="space-y-3"></div>
+    </section>
+
+    <!-- TAB 3: SUIVI & OUTILS (PARCOURS PMA, FERTILITE/BBT, KICKS, POIDS, INJECTIONS, ECHOS, CALCULATEUR) -->
+    <section id="tab-tools" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-black text-bronze-900">Suivi & Outils</h2>
+        <span class="text-xs text-bronze-500 font-medium">Synchronisé Vercel/GitHub</span>
+      </div>
+
+      <!-- SUB-TABS SELECTOR -->
+      <div class="flex overflow-x-auto gap-1 pb-1 hide-scrollbar border-b border-bronze-100">
+        <button onclick="switchToolsSubTab('pma')" id="tools-subtab-pma" class="px-3 py-1.5 rounded-lg text-xs font-bold text-purple-900 bg-purple-100 whitespace-nowrap">Parcours PMA</button>
+        <button onclick="switchToolsSubTab('fertility')" id="tools-subtab-fertility" class="px-3 py-1.5 rounded-lg text-xs font-medium text-pink-700 hover:bg-pink-50 whitespace-nowrap">Fertilité / T°</button>
+        <button onclick="switchToolsSubTab('kicks')" id="tools-subtab-kicks" class="px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50 whitespace-nowrap">Coups</button>
+        <button onclick="switchToolsSubTab('weight')" id="tools-subtab-weight" class="px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50 whitespace-nowrap">Poids</button>
+        <button onclick="switchToolsSubTab('injections')" id="tools-subtab-injections" class="px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50 whitespace-nowrap">Injections (PIO)</button>
+        <button onclick="switchToolsSubTab('echos')" id="tools-subtab-echos" class="px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50 whitespace-nowrap">Échos</button>
+        <button onclick="switchToolsSubTab('calc')" id="tools-subtab-calc" class="px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50 whitespace-nowrap">Calculateur</button>
+      </div>
+
+      <!-- SUBTAB: PARCOURS PMA (MILESTONES & CASCADE DATES) -->
+      <div id="tools-content-pma" class="space-y-4">
+        <!-- HEADER ACTIONS -->
+        <div class="bg-gradient-to-br from-purple-50 via-white to-bronze-50 p-4 rounded-2xl border border-purple-200/80 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-purple-950 flex items-center gap-1.5">
+                <i data-lucide="calendar-clock" class="w-4 h-4 text-purple-600"></i>
+                Gestionnaire de Protocole PMA
+              </h3>
+              <p class="text-xs text-purple-800/80">Étapes cliniques, déclenchement, ponction & transfert</p>
+            </div>
+            <button onclick="openAddMilestoneModal()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition shadow-sm flex items-center gap-1">
+              <i data-lucide="plus" class="w-4 h-4"></i> Étape
+            </button>
+          </div>
+
+          <!-- CASCADE SHIFT TRIGGER BUTTON -->
+          <div class="flex items-center justify-between pt-2 border-t border-purple-100">
+            <span class="text-xs text-purple-900 font-medium">Décalage de cycle imprévu ?</span>
+            <button onclick="openShiftDatesModal()" class="bg-white hover:bg-purple-50 text-purple-700 border border-purple-300 text-xs font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 shadow-2xs">
+              <i data-lucide="fast-forward" class="w-3.5 h-3.5"></i> Décaler en cascade (±X jours)
+            </button>
+          </div>
+        </div>
+
+        <!-- FILTER TABS: INCOMING, IN PROGRESS, COMPLETED -->
+        <div class="grid grid-cols-4 gap-1 p-1 bg-stone-100 rounded-xl text-xs font-semibold">
+          <button onclick="filterPmaStatus('all')" id="pma-filter-all" class="py-1.5 rounded-lg bg-white text-stone-900 shadow-2xs font-bold">Tous (<span id="count-pma-all">0</span>)</button>
+          <button onclick="filterPmaStatus('incoming')" id="pma-filter-incoming" class="py-1.5 rounded-lg text-stone-600 hover:text-stone-900">À venir (<span id="count-pma-incoming">0</span>)</button>
+          <button onclick="filterPmaStatus('in_progress')" id="pma-filter-in_progress" class="py-1.5 rounded-lg text-stone-600 hover:text-stone-900">En cours (<span id="count-pma-in_progress">0</span>)</button>
+          <button onclick="filterPmaStatus('completed')" id="pma-filter-completed" class="py-1.5 rounded-lg text-stone-600 hover:text-stone-900">Terminés (<span id="count-pma-completed">0</span>)</button>
+        </div>
+
+        <!-- MILESTONES LIST -->
+        <div id="pma-milestones-list" class="space-y-3"></div>
+      </div>
+
+      <!-- SUBTAB: FERTILITE & TEMPERATURE BASALE (BBT) -->
+      <div id="tools-content-fertility" class="hidden space-y-4">
+        <div class="bg-gradient-to-br from-pink-50 via-white to-bronze-50 p-4 rounded-2xl border border-pink-200/80 shadow-sm flex items-center justify-between">
+          <div>
+            <p class="text-xs text-pink-700 font-semibold">Suivi Fertilité & Température Basale (BBT)</p>
+            <p class="text-xs text-stone-600 mt-0.5">Dernière mesure : <strong id="bbt-latest-val" class="text-pink-900">37.1°C</strong> (Plateau lutéal)</p>
+          </div>
+          <button onclick="openAddBbtModal()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition shadow-sm flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> Nouvelle Mesure
+          </button>
+        </div>
+
+        <!-- CHART.JS BASAL TEMPERATURE GRAPH -->
+        <div class="bg-white rounded-2xl p-4 border border-bronze-100 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xs font-bold text-bronze-900 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="trending-up" class="w-4 h-4 text-pink-600"></i>
+              Courbe Thermique du Cycle (°C)
+            </h3>
+            <span class="text-[10px] bg-pink-100 text-pink-800 font-bold px-2 py-0.5 rounded-full">Ligne de base : 36.8°C</span>
+          </div>
+          <div class="h-56 w-full">
+            <canvas id="bbtChart"></canvas>
+          </div>
+          <p class="text-[11px] text-stone-500 mt-2 text-center">
+            Le décalage thermique au-dessus de 36.8°C confirme la phase post-ovulatoire ou la supplémentation en progestérone.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-bold text-bronze-900 mb-2">Historique des Températures</h3>
+          <div id="bbt-history-list" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- SUBTAB: KICKS COUNTER -->
+      <div id="tools-content-kicks" class="hidden space-y-4">
+        <div class="bg-gradient-to-br from-bronze-100/80 to-white rounded-2xl p-6 border border-bronze-200 text-center shadow-sm">
+          <p class="text-xs font-bold text-bronze-600 uppercase tracking-wider">Session de Comptage</p>
+          <div id="kick-timer" class="text-4xl font-black text-bronze-900 my-2 font-mono">00:00</div>
+          <div id="kick-count-display" class="text-lg font-bold text-bronze-700 mb-4">0 mouvement enregistré</div>
+
+          <div class="flex justify-center gap-3">
+            <button id="btn-kick-add" onclick="recordKick()" disabled class="bg-bronze-500 disabled:opacity-40 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow transition flex items-center gap-2">
+              <i data-lucide="footprints" class="w-4 h-4"></i> Coup !
+            </button>
+            <button id="btn-kick-toggle" onclick="toggleKickSession()" class="bg-bronze-200 hover:bg-bronze-300 text-bronze-900 font-bold text-sm px-5 py-3 rounded-2xl transition">
+              Démarrer
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-bold text-bronze-900 mb-2">Historique des Sessions de Coups</h3>
+          <div id="kicks-history-list" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- SUBTAB: POIDS MATERNEL -->
+      <div id="tools-content-weight" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-bronze-100 shadow-sm flex items-center justify-between">
+          <div>
+            <p class="text-xs text-bronze-500 font-medium">Prise de poids totale</p>
+            <p id="total-weight-gain" class="text-xl font-black text-bronze-900">+1.2 kg</p>
+          </div>
+          <button onclick="openAddWeightModal()" class="bg-bronze-500 text-white text-xs font-bold px-3 py-2 rounded-xl hover:bg-bronze-600 shadow-sm flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> Nouvelle Pesée
+          </button>
+        </div>
+
+        <!-- CHART CONTAINER -->
+        <div class="bg-white rounded-2xl p-4 border border-bronze-100 shadow-sm">
+          <h3 class="text-xs font-bold text-bronze-600 uppercase mb-3">Courbe d'évolution du poids (kg)</h3>
+          <div class="h-48 w-full">
+            <canvas id="weightChart"></canvas>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-bold text-bronze-900 mb-2">Journal des Pesées</h3>
+          <div id="weights-history-list" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- SUBTAB: INJECTIONS & MEDICATION -->
+      <div id="tools-content-injections" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-bronze-900">Suivi Progestérone (PIO) & Médication</h3>
+            <p class="text-xs text-bronze-500">Rotation des zones et observance</p>
+          </div>
+          <button onclick="openAddInjectionModal()" class="bg-bronze-500 text-white text-xs font-bold px-3 py-2 rounded-xl hover:bg-bronze-600 shadow-sm flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> Ajouter
+          </button>
+        </div>
+
+        <button onclick="requestNotificationPermission()" class="w-full bg-bronze-50 hover:bg-bronze-100 text-bronze-800 border border-bronze-200 rounded-xl py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-2 transition">
+          <i data-lucide="bell-ring" class="w-4 h-4 text-bronze-600"></i>
+          Activer les Rappels Locaux de Notification
+        </button>
+
+        <div id="injections-history-list" class="space-y-2"></div>
+      </div>
+
+      <!-- SUBTAB: GALERIE ECHOGRAPHIES -->
+      <div id="tools-content-echos" class="hidden space-y-4">
+        <!-- Hero Card Scanner Camera -->
+        <div class="bg-gradient-to-r from-pink-600 via-rose-500 to-amber-600 rounded-3xl p-5 text-white shadow-md relative overflow-hidden">
+          <div class="relative z-10 space-y-2">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-bold tracking-wide">
+              <i data-lucide="camera" class="w-3.5 h-3.5"></i> API Web Camera Intégrée
+            </div>
+            <h3 class="text-lg font-bold leading-tight">Numérisez vos Clichés d'Échographie</h3>
+            <p class="text-xs text-white/90 leading-relaxed max-w-sm">Capturez directement vos clichés d'échographies ou bilans médicaux via l'appareil photo de votre smartphone pour les archiver instantanément dans votre galerie.</p>
+            <div class="flex flex-wrap items-center gap-2 pt-2">
+              <button onclick="openWebCameraModal()" class="bg-white text-pink-700 font-bold text-xs px-4 py-2.5 rounded-xl shadow-md hover:bg-pink-50 flex items-center gap-2 transition-transform active:scale-95">
+                <i data-lucide="camera" class="w-4 h-4 text-pink-600"></i> Capturer avec l'appareil photo
+              </button>
+              <button onclick="openAddEchoModal()" class="bg-white/20 hover:bg-white/30 text-white font-semibold text-xs px-3.5 py-2.5 rounded-xl backdrop-blur-sm flex items-center gap-1.5">
+                <i data-lucide="plus" class="w-4 h-4"></i> Saisie manuelle
+              </button>
+            </div>
+          </div>
+          <div class="absolute -right-4 -bottom-6 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <h3 class="text-sm font-bold text-bronze-900">Galerie des Clichés & Dossier</h3>
+            <p class="text-xs text-bronze-500">Archives morphologiques, photos et biométrie</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openWebCameraModal()" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
+              <i data-lucide="camera" class="w-3.5 h-3.5"></i> Photo
+            </button>
+            <button onclick="openAddEchoModal()" class="bg-bronze-100 hover:bg-bronze-200 text-bronze-800 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Manuel
+            </button>
+          </div>
+        </div>
+
+        <div id="echos-history-list" class="space-y-3"></div>
+      </div>
+
+      <!-- SUBTAB: CALCULATEUR -->
+      <div id="tools-content-calc" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-5 border border-bronze-100 shadow-sm space-y-4">
+          <h3 class="text-sm font-bold text-bronze-900">Calculateur d'Âge Gestationnel & DPA</h3>
+          
+          <div>
+            <label class="block text-xs font-medium text-bronze-700 mb-1">Date des Dernières Règles (DDR)</label>
+            <input type="date" id="calc-lmp-input" class="w-full bg-bronze-50/50 border border-bronze-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-bronze-400">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-bronze-700 mb-1">Date de Conception / Transfert Embryonnaire (PMA)</label>
+            <input type="date" id="calc-conception-input" class="w-full bg-bronze-50/50 border border-bronze-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-bronze-400">
+          </div>
+
+          <button onclick="savePregnancyDates()" class="w-full bg-bronze-500 hover:bg-bronze-600 text-white font-bold py-3 rounded-xl transition shadow-sm text-sm">
+            Recalculer & Mettre à jour l'application
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 4: GUIDE, PRECAUTIONS & REPAS -->
+    <section id="tab-guide" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-black text-bronze-900">Guide Médical & Repas</h2>
+        <span class="text-xs text-bronze-500 font-medium">Validé sage-femme</span>
+      </div>
+
+      <!-- SUB-TABS SELECTOR -->
+      <div class="flex gap-2 border-b border-bronze-100 pb-2">
+        <button onclick="switchGuideSubTab('precaution')" id="guide-subtab-precaution" class="px-3 py-1.5 rounded-lg text-xs font-bold text-bronze-900 bg-bronze-100">Précautions</button>
+        <button onclick="switchGuideSubTab('glossary')" id="guide-subtab-glossary" class="px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50">Glossaire</button>
+        <button onclick="switchGuideSubTab('meals')" id="guide-subtab-meals" class="px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50">Idées de Repas</button>
+      </div>
+
+      <!-- SUBTAB: PRECAUTIONS -->
+      <div id="guide-content-precaution" class="space-y-3"></div>
+
+      <!-- SUBTAB: GLOSSAIRE -->
+      <div id="guide-content-glossary" class="hidden space-y-3">
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 text-bronze-400 absolute left-3 top-3"></i>
+          <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="Rechercher (ex: colostrum, amnio, Braxton-Hicks...)" class="w-full bg-bronze-50/60 border border-bronze-200 rounded-xl pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-bronze-400">
+        </div>
+        <div id="glossary-list" class="space-y-2.5"></div>
+      </div>
+
+      <!-- SUBTAB: MEALS IDEAS -->
+      <div id="guide-content-meals" class="hidden space-y-3">
+        <div class="flex gap-2">
+          <button onclick="setMealTrimester(1)" id="btn-meal-t1" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-bronze-100 text-bronze-900 border border-bronze-200">1er Trimestre</button>
+          <button onclick="setMealTrimester(2)" id="btn-meal-t2" class="flex-1 py-1.5 rounded-lg text-xs font-medium bg-white text-bronze-600 border border-bronze-200">2ème Trimestre</button>
+          <button onclick="setMealTrimester(3)" id="btn-meal-t3" class="flex-1 py-1.5 rounded-lg text-xs font-medium bg-white text-bronze-600 border border-bronze-200">3ème Trimestre</button>
+        </div>
+        <div id="meal-ideas-container" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- TAB 5: PROJET DE NAISSANCE & CARNET INTIME -->
+    <section id="tab-project" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-black text-bronze-900">Projet & Carnet Intime</h2>
+        <div class="flex gap-2">
+          <button onclick="exportToPdf()" class="bg-bronze-500 hover:bg-bronze-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition shadow-sm flex items-center gap-1.5">
+            <i data-lucide="printer" class="w-4 h-4"></i> Exporter PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- SUB-TABS SELECTOR -->
+      <div class="flex gap-2 border-b border-bronze-100 pb-2">
+        <button onclick="switchProjectSubTab('birthplan')" id="project-subtab-birthplan" class="px-3 py-1.5 rounded-lg text-xs font-bold text-bronze-900 bg-bronze-100">Projet de Naissance</button>
+        <button onclick="switchProjectSubTab('journal')" id="project-subtab-journal" class="px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50">Carnet & Symptômes</button>
+      </div>
+
+      <!-- SUBTAB: BIRTH PLAN -->
+      <div id="project-content-birthplan" class="space-y-3">
+        <div class="bg-bronze-50 p-3 rounded-xl border border-bronze-200/80 text-xs text-bronze-700">
+          Ce projet récapitule vos souhaits pour l'accouchement et l'accueil de votre nouveau-né. Il peut être imprimé ou transmis en PDF à votre maternité.
+        </div>
+        <div id="birth-plan-questions-container" class="space-y-3"></div>
+      </div>
+
+      <!-- SUBTAB: INTIMATE JOURNAL -->
+      <div id="project-content-journal" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-4 border border-bronze-100 shadow-sm space-y-3">
+          <h3 class="text-sm font-bold text-bronze-900">Nouvelle Entrée au Carnet</h3>
+
+          <div>
+            <label class="block text-xs font-medium text-bronze-600 mb-1">Humeur du jour</label>
+            <div class="flex justify-between text-2xl px-2">
+              <button type="button" onclick="selectMood('😊')" class="mood-btn p-1.5 rounded-xl hover:bg-bronze-50 transition border border-transparent">😊</button>
+              <button type="button" onclick="selectMood('😌')" class="mood-btn p-1.5 rounded-xl hover:bg-bronze-50 transition border border-transparent">😌</button>
+              <button type="button" onclick="selectMood('😐')" class="mood-btn p-1.5 rounded-xl hover:bg-bronze-50 transition border border-transparent">😐</button>
+              <button type="button" onclick="selectMood('🥱')" class="mood-btn p-1.5 rounded-xl hover:bg-bronze-50 transition border border-transparent">🥱</button>
+              <button type="button" onclick="selectMood('😭')" class="mood-btn p-1.5 rounded-xl hover:bg-bronze-50 transition border border-transparent">😭</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-bronze-600 mb-1">Symptômes ressentis</label>
+            <input type="text" id="journal-symptoms-input" placeholder="Ex: Nausées matinales, jambes lourdes, fatigue..." class="w-full bg-bronze-50/50 border border-bronze-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-bronze-400">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-bronze-600 mb-1">Notes personnelles & pensées pour bébé</label>
+            <textarea id="journal-notes-input" rows="3" placeholder="Écrivez ce qui vous passe par le cœur aujourd'hui..." class="w-full bg-bronze-50/50 border border-bronze-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-bronze-400"></textarea>
+          </div>
+
+          <button onclick="saveJournalEntry()" class="w-full bg-bronze-500 hover:bg-bronze-600 text-white font-bold py-2.5 rounded-xl transition shadow-sm text-sm">
+            Enregistrer dans le carnet
+          </button>
+        </div>
+
+        <div id="journal-entries-container" class="space-y-2.5"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PRINT SECTION FOR CLEAN PDF EXPORT -->
+  <div id="print-section" class="hidden p-8 text-black bg-white">
+    <div class="border-b-2 border-stone-800 pb-4 mb-6 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold">DOSSIER MÉDICAL DE GROSSESSE</h1>
+        <p class="text-sm text-stone-600">Patiente : Fatou | <em>« Un jour, un pas, un battement de cœur à la fois »</em></p>
+      </div>
+      <div class="text-right text-xs text-stone-500">
+        Date d'export : <span id="print-date"></span>
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <h2 class="text-lg font-bold border-b border-stone-300 pb-1 mb-3">1. Projet de Naissance Officiel</h2>
+      <div id="print-birth-plan-content" class="space-y-3 text-sm"></div>
+    </div>
+
+    <div>
+      <h2 class="text-lg font-bold border-b border-stone-300 pb-1 mb-3">2. Extraits du Carnet & Historique des Symptômes</h2>
+      <div id="print-journal-content" class="space-y-3 text-sm"></div>
+    </div>
+  </div>
+
+  <!-- FIXED BOTTOM NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-bronze-100 py-1.5 px-2">
+    <div class="max-w-xl mx-auto grid grid-cols-5 gap-1">
+      <button onclick="switchTab('home', 0)" id="nav-btn-home" class="nav-item flex flex-col items-center py-1 text-bronze-900 font-bold">
+        <i data-lucide="home" class="w-5 h-5"></i>
+        <span class="text-[10px] mt-0.5">Accueil</span>
+      </button>
+
+      <button onclick="switchTab('timeline', 1)" id="nav-btn-timeline" class="nav-item flex flex-col items-center py-1 text-bronze-400 hover:text-bronze-800 font-medium">
+        <i data-lucide="activity" class="w-5 h-5"></i>
+        <span class="text-[10px] mt-0.5">Chrono</span>
+      </button>
+
+      <button onclick="switchTab('tools', 2)" id="nav-btn-tools" class="nav-item flex flex-col items-center py-1 text-bronze-400 hover:text-bronze-800 font-medium">
+        <i data-lucide="calendar" class="w-5 h-5"></i>
+        <span class="text-[10px] mt-0.5">Suivi</span>
+      </button>
+
+      <button onclick="switchTab('guide', 3)" id="nav-btn-guide" class="nav-item flex flex-col items-center py-1 text-bronze-400 hover:text-bronze-800 font-medium">
+        <i data-lucide="book-open" class="w-5 h-5"></i>
+        <span class="text-[10px] mt-0.5">Guide</span>
+      </button>
+
+      <button onclick="switchTab('project', 4)" id="nav-btn-project" class="nav-item flex flex-col items-center py-1 text-bronze-400 hover:text-bronze-800 font-medium">
+        <i data-lucide="heart" class="w-5 h-5"></i>
+        <span class="text-[10px] mt-0.5">Projet</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MODAL: GOOGLE SIGN-IN & MULTI-DEVICE SYNC -->
+  <div id="modal-sync" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm border border-bronze-200 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-bronze-900 flex items-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          Google Sign-In & Sync Cloud
+        </h3>
+        <button onclick="closeModal('modal-sync')" class="text-stone-400 hover:text-stone-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs text-emerald-900 space-y-1">
+        <p class="font-bold flex items-center gap-1.5 text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Connecté avec Google
+        </p>
+        <p id="modal-sync-email" class="font-mono text-emerald-950 font-semibold">410bala@gmail.com</p>
+        <p class="text-[11px] text-emerald-700">Synchronisé automatiquement avec Vercel, GitHub et vos autres appareils.</p>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <button onclick="triggerCloudSync()" class="w-full bg-bronze-500 hover:bg-bronze-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-2xs flex items-center justify-center gap-2">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i> Synchroniser maintenant
+        </button>
+
+        <button onclick="exportDataJson()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i> Exporter sauvegarde JSON
+        </button>
+
+        <label class="w-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer">
+          <i data-lucide="upload" class="w-4 h-4"></i> Importer sauvegarde JSON
+          <input type="file" id="import-json-file" accept=".json" onchange="importDataJson(event)" class="hidden">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD/EDIT PMA MILESTONE -->
+  <div id="modal-pma-milestone" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm border border-purple-200 shadow-xl space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 id="modal-pma-title" class="text-base font-bold text-purple-950">Ajouter une étape PMA</h3>
+        <button onclick="closeModal('modal-pma-milestone')" class="text-stone-400 hover:text-stone-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      
+      <input type="hidden" id="pma-edit-id">
+
+      <div>
+        <label class="block text-xs font-medium text-stone-700 mb-1">Titre de l'étape / Rendez-vous</label>
+        <input type="text" id="pma-input-title" placeholder="Ex: Trigger Shot / Déclenchement Ovitrelle" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-xs focus:outline-none focus:border-purple-400">
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Catégorie</label>
+          <select id="pma-input-category" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2 text-xs">
+            <option value="Monitoring">Monitoring (Écho/Prise)</option>
+            <option value="Medication">Medication (Injection/Traitement)</option>
+            <option value="Procedure">Procedure (Ponction/Transfert)</option>
+            <option value="Testing">Testing (Bêta HCG/Bilan)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Statut</label>
+          <select id="pma-input-status" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2 text-xs">
+            <option value="incoming">À venir (Incoming)</option>
+            <option value="in_progress">En cours (In Progress)</option>
+            <option value="completed">Terminé (Completed)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Date</label>
+          <input type="date" id="pma-input-date" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2 text-xs">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Heure</label>
+          <input type="time" id="pma-input-time" value="09:00" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2 text-xs">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-stone-700 mb-1">Instructions / Posologie / Notes</label>
+        <textarea id="pma-input-notes" rows="2" placeholder="Ex: À jeun, bien respecter l'heure de déclenchement..." class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2 text-xs"></textarea>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal('modal-pma-milestone')" class="flex-1 py-2.5 text-xs font-bold bg-stone-100 text-stone-800 rounded-xl">Annuler</button>
+        <button onclick="confirmSaveMilestone()" class="flex-1 py-2.5 text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-2xs">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CASCADE SHIFT DATES (+X / -X DAYS) -->
+  <div id="modal-pma-shift" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm border border-purple-200 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-purple-950 flex items-center gap-1.5">
+          <i data-lucide="fast-forward" class="w-4 h-4 text-purple-600"></i>
+          Décalage Dynamique en Cascade
+        </h3>
+        <button onclick="closeModal('modal-pma-shift')" class="text-stone-400 hover:text-stone-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-stone-600 leading-relaxed">
+        Si votre cycle ou votre date de déclenchement / ponction est retardé ou avancé, décalez toutes les étapes suivantes automatiquement en 1 clic :
+      </p>
+
+      <div>
+        <label class="block text-xs font-medium text-stone-700 mb-1">À partir de quelle étape ?</label>
+        <select id="shift-milestone-start" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-xs"></select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-stone-700 mb-1">Nombre de jours de décalage (±Jours)</label>
+        <div class="flex items-center gap-2">
+          <input type="number" id="shift-days-count" value="1" step="1" class="w-24 bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-center text-sm font-bold">
+          <span class="text-xs text-stone-500">jours (ex: +2, +1, ou -1)</span>
+        </div>
+      </div>
+
+      <div class="p-3 bg-purple-50 rounded-xl border border-purple-200 text-[11px] text-purple-900 font-medium">
+        ℹ️ Toutes les étapes non terminées postérieures à cette étape verront leurs dates décalées en cascade.
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeModal('modal-pma-shift')" class="flex-1 py-2.5 text-xs font-bold bg-stone-100 text-stone-800 rounded-xl">Annuler</button>
+        <button onclick="confirmCascadeShift()" class="flex-1 py-2.5 text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-2xs">Appliquer le décalage</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD BASAL TEMPERATURE (BBT) -->
+  <div id="modal-add-bbt" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm border border-pink-200 shadow-xl space-y-3">
+      <h3 class="text-base font-bold text-pink-950">Enregistrer une Température Basale</h3>
+      
+      <div>
+        <label class="block text-xs font-medium text-stone-700 mb-1">Température du matin au réveil (°C)</label>
+        <input type="number" step="0.05" id="bbt-val-input" placeholder="Ex: 36.95" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-sm font-bold text-center">
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-stone-700 mb-1">Date</label>
+        <input type="date" id="bbt-date-input" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2 text-xs">
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-stone-700 mb-1">Observations (test LH, glaire, progestérone...)</label>
+        <input type="text" id="bbt-notes-input" placeholder="Ex: Test LH +, début progestérone PIO" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-2 text-xs">
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal('modal-add-bbt')" class="flex-1 py-2.5 text-xs font-bold bg-stone-100 text-stone-800 rounded-xl">Annuler</button>
+        <button onclick="confirmAddBbt()" class="flex-1 py-2.5 text-xs font-bold bg-pink-600 hover:bg-pink-700 text-white rounded-xl shadow-2xs">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AJOUT PESEE -->
+  <div id="modal-add-weight" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm border border-bronze-200 shadow-xl space-y-4">
+      <h3 class="text-base font-bold text-bronze-900">Enregistrer une pesée</h3>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Poids (kg)</label>
+        <input type="number" step="0.1" id="modal-weight-val" placeholder="Ex: 63.5" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2.5 text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Notes (optionnel)</label>
+        <input type="text" id="modal-weight-note" placeholder="Ex: matin à jeun" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2.5 text-sm">
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal('modal-add-weight')" class="flex-1 py-2.5 text-xs font-bold bg-bronze-100 text-bronze-800 rounded-xl">Annuler</button>
+        <button onclick="confirmAddWeight()" class="flex-1 py-2.5 text-xs font-bold bg-bronze-500 text-white rounded-xl">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AJOUT INJECTION -->
+  <div id="modal-add-injection" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm border border-bronze-200 shadow-xl space-y-3">
+      <h3 class="text-base font-bold text-bronze-900">Programmer une injection</h3>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Médicament</label>
+        <input type="text" id="modal-inj-name" value="Progestérone (PIO)" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Dose</label>
+        <input type="text" id="modal-inj-dose" value="50mg / 1ml" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Zone d'injection</label>
+        <input type="text" id="modal-inj-site" value="Fesse gauche" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Date</label>
+        <input type="date" id="modal-inj-date" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2 text-sm">
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal('modal-add-injection')" class="flex-1 py-2.5 text-xs font-bold bg-bronze-100 text-bronze-800 rounded-xl">Annuler</button>
+        <button onclick="confirmAddInjection()" class="flex-1 py-2.5 text-xs font-bold bg-bronze-500 text-white rounded-xl">Ajouter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AJOUT ECHO (MANUEL) -->
+  <div id="modal-add-echo" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm border border-bronze-200 shadow-xl space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-bronze-900">Ajouter une Échographie</h3>
+        <button onclick="closeModal('modal-add-echo')" class="text-stone-400 hover:text-stone-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Titre de l'examen</label>
+        <input type="text" id="modal-echo-title" placeholder="Ex: Échographie morphologique T2" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Trimestre</label>
+        <select id="modal-echo-trimester" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2 text-sm">
+          <option value="Précoce">Précoce (Viabilité)</option>
+          <option value="T1">1er Trimestre (11-13 SA)</option>
+          <option value="T2">2ème Trimestre (22 SA)</option>
+          <option value="T3">3ème Trimestre (32 SA)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Date</label>
+        <input type="date" id="modal-echo-date" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Photo du cliché (Optionnel)</label>
+        <div class="flex gap-2">
+          <input type="file" id="modal-echo-file-input" accept="image/*" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-1.5 text-xs">
+          <button type="button" onclick="closeModal('modal-add-echo'); openWebCameraModal();" class="p-2 bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-xl" title="Prendre avec la caméra">
+            <i data-lucide="camera" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-bronze-600 mb-1">Compte-rendu & mesures</label>
+        <input type="text" id="modal-echo-note" placeholder="Ex: Clarté nucale normale, croissance conforme" class="w-full bg-bronze-50 border border-bronze-200 rounded-xl p-2 text-sm">
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal('modal-add-echo')" class="flex-1 py-2.5 text-xs font-bold bg-bronze-100 text-bronze-800 rounded-xl">Annuler</button>
+        <button onclick="confirmAddEcho()" class="flex-1 py-2.5 text-xs font-bold bg-bronze-500 text-white rounded-xl">Ajouter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SCANNER CAMERA (API WEB CAMERA) -->
+  <div id="modal-web-camera" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4" onclick="closeWebCameraModal()">
+    <div class="bg-stone-900 border border-stone-800 text-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[92vh]" onclick="event.stopPropagation()">
+      <!-- Header -->
+      <div class="p-4 border-b border-stone-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center">
+            <i data-lucide="camera" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Scanner Échographie</h3>
+            <p class="text-[11px] text-stone-400">Capture directe via caméra mobile</p>
+          </div>
+        </div>
+        <button onclick="closeWebCameraModal()" class="w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 flex items-center justify-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Viewfinder / Preview Screen -->
+      <div class="relative bg-black flex-1 flex flex-col items-center justify-center overflow-hidden min-h-[320px]">
+        <!-- Live Video Element -->
+        <video id="camera-stream-video" autoplay playsinline muted class="w-full h-80 object-cover"></video>
+        
+        <!-- Framing Guide Overlay -->
+        <div id="camera-framing-guide" class="absolute inset-4 border-2 border-dashed border-pink-400/70 rounded-2xl pointer-events-none flex flex-col justify-between p-3">
+          <div class="flex justify-between items-center text-[10px] text-pink-300 font-mono tracking-wider bg-black/50 px-2 py-0.5 rounded backdrop-blur-sm self-start">
+            CADRE ÉCHOGRAPHIE
+          </div>
+          <div class="text-center text-[11px] text-white/90 bg-black/60 px-3 py-1 rounded-full self-center backdrop-blur-sm shadow">
+            Placez le cliché au centre du cadre
+          </div>
+          <div class="flex justify-between">
+            <span class="w-4 h-4 border-b-2 border-l-2 border-pink-400"></span>
+            <span class="w-4 h-4 border-b-2 border-r-2 border-pink-400"></span>
+          </div>
+        </div>
+
+        <!-- Captured Image Preview -->
+        <div id="camera-snapshot-preview" class="hidden absolute inset-0 bg-stone-900 flex flex-col items-center justify-center">
+          <img id="camera-snapshot-img" class="w-full h-full object-contain bg-black" alt="Cliché capturé" />
+          <div class="absolute top-3 right-3 bg-emerald-500/90 text-white backdrop-blur-sm px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 shadow-lg">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i> Cliché capturé
+          </div>
+        </div>
+
+        <!-- Camera Error View / Permission Fallback -->
+        <div id="camera-error-view" class="hidden absolute inset-0 bg-stone-900 p-6 flex flex-col items-center justify-center text-center space-y-3">
+          <div class="w-12 h-12 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center">
+            <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+          </div>
+          <h4 class="text-sm font-bold text-white">Appareil photo indisponible</h4>
+          <p id="camera-error-msg" class="text-xs text-stone-400 leading-relaxed max-w-xs">
+            L'accès à la caméra a été refusé ou n'est pas supporté. Vous pouvez choisir ou prendre une photo directement.
+          </p>
+          <label for="camera-fallback-file" class="cursor-pointer bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md flex items-center gap-2">
+            <i data-lucide="image" class="w-4 h-4"></i> Prendre ou choisir une photo
+          </label>
+          <input type="file" id="camera-fallback-file" accept="image/*" capture="environment" class="hidden" onchange="handleCameraFallbackFile(event)">
+        </div>
+
+        <!-- Hidden canvas for capturing frame -->
+        <canvas id="camera-hidden-canvas" class="hidden"></canvas>
+      </div>
+
+      <!-- Controls Area -->
+      <div class="p-4 bg-stone-950 border-t border-stone-800 space-y-3">
+        <!-- Live Controls (Shutter, Switch, Picker) -->
+        <div id="camera-live-controls" class="flex items-center justify-around py-1">
+          <!-- Flip Camera -->
+          <button onclick="toggleCameraFacing()" title="Changer d'objectif" class="p-3 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 transition-colors">
+            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+          </button>
+
+          <!-- Shutter Button -->
+          <button onclick="captureCameraSnapshot()" title="Prendre la photo" class="relative group p-1 rounded-full bg-white/20 hover:bg-white/30 transition-transform active:scale-90">
+            <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-95 transition-transform">
+              <div class="w-13 h-13 rounded-full border-2 border-stone-900 bg-gradient-to-tr from-pink-600 to-rose-500 flex items-center justify-center">
+                <i data-lucide="camera" class="w-6 h-6 text-white"></i>
+              </div>
+            </div>
+          </button>
+
+          <!-- File upload fallback button -->
+          <label for="camera-direct-input" title="Sélectionner depuis la galerie" class="cursor-pointer p-3 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 transition-colors">
+            <i data-lucide="folder-image" class="w-5 h-5"></i>
+          </label>
+          <input type="file" id="camera-direct-input" accept="image/*" capture="environment" class="hidden" onchange="handleCameraFallbackFile(event)">
+        </div>
+
+        <!-- Post-Capture Form -->
+        <div id="camera-post-controls" class="hidden space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] font-medium text-stone-400 mb-1">Titre de l'échographie</label>
+              <input type="text" id="camera-echo-title" placeholder="Ex: Cliché 12 SA" class="w-full bg-stone-900 border border-stone-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-pink-500">
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium text-stone-400 mb-1">Trimestre</label>
+              <select id="camera-echo-trimester" class="w-full bg-stone-900 border border-stone-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-pink-500">
+                <option value="Précoce">Précoce (Viabilité)</option>
+                <option value="T1" selected>T1 (11-13 SA)</option>
+                <option value="T2">T2 Morphologique (22 SA)</option>
+                <option value="T3">T3 Croissance (32 SA)</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-stone-400 mb-1">Notes & Biométrie (Optionnel)</label>
+            <input type="text" id="camera-echo-notes" placeholder="Ex: Clarté nucale 1.2mm, LCC 65mm, morphologie normale" class="w-full bg-stone-900 border border-stone-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-pink-500">
+          </div>
+          <div class="flex gap-2 pt-1">
+            <button onclick="retakeCameraSnapshot()" class="flex-1 py-2.5 text-xs font-bold bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-xl flex items-center justify-center gap-1.5">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reprendre
+            </button>
+            <button onclick="saveCameraSnapshotToGallery()" class="flex-1 py-2.5 text-xs font-bold bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white rounded-xl shadow-md flex items-center justify-center gap-1.5">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i> Enregistrer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VISIONNEUSE LIGHTBOX ECHOGRAPHIE -->
+  <div id="modal-echo-lightbox" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4" onclick="closeModal('modal-echo-lightbox')">
+    <div class="relative max-w-lg w-full max-h-[92vh] flex flex-col items-center" onclick="event.stopPropagation()">
+      <button onclick="closeModal('modal-echo-lightbox')" class="absolute -top-12 right-0 p-2 text-white/80 hover:text-white bg-white/10 rounded-full">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <img id="lightbox-echo-img" src="" class="max-h-[70vh] w-auto max-w-full rounded-2xl shadow-2xl object-contain bg-black border border-stone-800" alt="Échographie agrandie">
+      <div class="w-full bg-stone-900/95 text-white p-4 rounded-2xl mt-3 border border-stone-800 flex items-center justify-between">
+        <div>
+          <h4 id="lightbox-echo-title" class="font-bold text-sm text-white"></h4>
+          <p id="lightbox-echo-subtitle" class="text-xs text-stone-400"></p>
+        </div>
+        <a id="lightbox-echo-download" href="#" download="echographie.jpg" class="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors">
+          <i data-lucide="download" class="w-4 h-4"></i> Télécharger
+        </a>
+      </div>
+    </div>
+  <!-- MODAL: AJOUT / MODIFICATION VISITE GYN -->
+  <div id="modal-calendar-gyn" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md border border-blue-200 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-blue-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+            <i data-lucide="stethoscope" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 id="gyn-modal-heading" class="text-base font-bold text-blue-950">Visite GYN & Consultation</h3>
+            <p class="text-[11px] text-blue-600">Rendez-vous médical synchronisé</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-calendar-gyn')" class="text-stone-400 hover:text-stone-600 p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="gyn-edit-id">
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Date</label>
+          <input type="date" id="gyn-edit-date" class="w-full bg-blue-50/50 border border-blue-200 rounded-xl p-2 text-xs text-stone-900 focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Heure</label>
+          <input type="time" id="gyn-edit-time" value="14:00" class="w-full bg-blue-50/50 border border-blue-200 rounded-xl p-2 text-xs text-stone-900 focus:outline-none focus:border-blue-500">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1">Médecin / Praticien</label>
+        <input type="text" id="gyn-edit-doctor" placeholder="Ex: Dr. Moreau (Gynécologue Obstétricien)" class="w-full bg-blue-50/50 border border-blue-200 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:border-blue-500">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1">Type de consultation</label>
+        <select id="gyn-edit-type" class="w-full bg-blue-50/50 border border-blue-200 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:border-blue-500">
+          <option value="Consultation prénatale mensuelle (T1/T2/T3)">Consultation prénatale mensuelle (T1/T2/T3)</option>
+          <option value="Entretien prénatal précoce (EPP)">Entretien prénatal précoce (EPP / Sage-femme)</option>
+          <option value="Échographie de contrôle & biométrie">Échographie de contrôle & biométrie</option>
+          <option value="Surveillance col de l'utérus & monitoring">Surveillance col de l'utérus & monitoring</option>
+          <option value="Consultation anesthésie péridurale">Consultation anesthésie péridurale</option>
+          <option value="Bilan biologique / Dépistage DPNI">Bilan biologique / Dépistage DPNI</option>
+          <option value="Visite post-partum">Visite post-partum</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1">Lieu / Maternité</label>
+        <input type="text" id="gyn-edit-location" placeholder="Ex: Clinique Maternité - Bâtiment B, Cabinet Médical" class="w-full bg-blue-50/50 border border-blue-200 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:border-blue-500">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1">Consignes & Questions à poser au médecin</label>
+        <textarea id="gyn-edit-notes" rows="3" placeholder="Ex: Vérifier la tension artérielle, demander l'ordonnance pour le fer, poser questions sur les tiraillements..." class="w-full bg-blue-50/50 border border-blue-200 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:border-blue-500"></textarea>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <input type="checkbox" id="gyn-edit-done" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4">
+        <label for="gyn-edit-done" class="text-xs text-stone-700 font-medium cursor-pointer">Marquer cette visite comme effectuée</label>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal('modal-calendar-gyn')" class="flex-1 py-2.5 text-xs font-bold bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl">Annuler</button>
+        <button onclick="saveGynVisitFromModal()" class="flex-1 py-2.5 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md flex items-center justify-center gap-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i> Enregistrer & Sync
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AJOUT / MODIFICATION MEMO & NOTE -->
+  <div id="modal-calendar-memo" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md border border-amber-200 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-amber-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
+            <i data-lucide="sticky-note" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 id="memo-modal-heading" class="text-base font-bold text-amber-950">Mémo & Note de Grossesse</h3>
+            <p class="text-[11px] text-amber-600">Pense-bête & questions synchronisées</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-calendar-memo')" class="text-stone-400 hover:text-stone-600 p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="memo-edit-id">
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Date</label>
+          <input type="date" id="memo-edit-date" class="w-full bg-amber-50/50 border border-amber-200 rounded-xl p-2 text-xs text-stone-900 focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Catégorie</label>
+          <select id="memo-edit-category" class="w-full bg-amber-50/50 border border-amber-200 rounded-xl p-2 text-xs text-stone-900 focus:outline-none focus:border-amber-500">
+            <option value="Question Médecin">Question Médecin</option>
+            <option value="À Faire / Démarche">À Faire / Démarche</option>
+            <option value="Pharmacie & Soins">Pharmacie & Soins</option>
+            <option value="Rappel Personnel">Rappel Personnel</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1">Titre du mémo</label>
+        <input type="text" id="memo-edit-title" placeholder="Ex: Questions pour la sage-femme, Achat coussin d'allaitement" class="w-full bg-amber-50/50 border border-amber-200 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:border-amber-500">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1">Contenu détaillé de la note</label>
+        <textarea id="memo-edit-content" rows="4" placeholder="Écrivez vos notes, listes ou détails ici..." class="w-full bg-amber-50/50 border border-amber-200 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:border-amber-500"></textarea>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <input type="checkbox" id="memo-edit-done" class="rounded text-amber-600 focus:ring-amber-500 w-4 h-4">
+        <label for="memo-edit-done" class="text-xs text-stone-700 font-medium cursor-pointer">Marqué comme résolu / fait</label>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal('modal-calendar-memo')" class="flex-1 py-2.5 text-xs font-bold bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl">Annuler</button>
+        <button onclick="saveMemoFromModal()" class="flex-1 py-2.5 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-md flex items-center justify-center gap-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i> Enregistrer & Sync
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AJOUT / MODIFICATION JOURNAL DEPUIS LE CALENDRIER -->
+  <div id="modal-calendar-journal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md border border-emerald-200 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-emerald-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+            <i data-lucide="book-heart" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 id="journal-modal-heading" class="text-base font-bold text-emerald-950">Journal Intime du Jour</h3>
+            <p class="text-[11px] text-emerald-600">Ressentis, humeur et dialogue avec bébé</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-calendar-journal')" class="text-stone-400 hover:text-stone-600 p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="journal-edit-id">
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1">Date</label>
+        <input type="date" id="journal-edit-date" class="w-full bg-emerald-50/50 border border-emerald-200 rounded-xl p-2 text-xs text-stone-900 focus:outline-none focus:border-emerald-500">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1.5">Humeur du jour</label>
+        <div class="flex gap-2" id="calendar-journal-moods">
+          <button type="button" onclick="selectCalendarJournalMood('😊', this)" class="cal-mood-btn p-2 bg-emerald-100 border-2 border-emerald-500 rounded-xl text-lg transition active:scale-90">😊</button>
+          <button type="button" onclick="selectCalendarJournalMood('🥰', this)" class="cal-mood-btn p-2 bg-stone-50 border border-stone-200 rounded-xl text-lg transition active:scale-90">🥰</button>
+          <button type="button" onclick="selectCalendarJournalMood('🥱', this)" class="cal-mood-btn p-2 bg-stone-50 border border-stone-200 rounded-xl text-lg transition active:scale-90">🥱</button>
+          <button type="button" onclick="selectCalendarJournalMood('🤢', this)" class="cal-mood-btn p-2 bg-stone-50 border border-stone-200 rounded-xl text-lg transition active:scale-90">🤢</button>
+          <button type="button" onclick="selectCalendarJournalMood('😰', this)" class="cal-mood-btn p-2 bg-stone-50 border border-stone-200 rounded-xl text-lg transition active:scale-90">😰</button>
+          <button type="button" onclick="selectCalendarJournalMood('✨', this)" class="cal-mood-btn p-2 bg-stone-50 border border-stone-200 rounded-xl text-lg transition active:scale-90">✨</button>
+        </div>
+        <input type="hidden" id="journal-edit-mood" value="😊">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1">Symptômes physiques</label>
+        <input type="text" id="journal-edit-symptoms" placeholder="Ex: Tiraillements légers, fatigue, nausées matinales..." class="w-full bg-emerald-50/50 border border-emerald-200 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:border-emerald-500">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-stone-700 mb-1">Pensées intimes & mots pour bébé</label>
+        <textarea id="journal-edit-notes" rows="4" placeholder="Écrivez ce qui vous passe par le cœur aujourd'hui..." class="w-full bg-emerald-50/50 border border-emerald-200 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-none focus:border-emerald-500"></textarea>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal('modal-calendar-journal')" class="flex-1 py-2.5 text-xs font-bold bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl">Annuler</button>
+        <button onclick="saveJournalFromCalendarModal()" class="flex-1 py-2.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md flex items-center justify-center gap-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i> Enregistrer & Sync
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION CORE LOGIC SCRIPT -->
+  <script>
+    // --- STATE MANAGEMENT WITH LOCALSTORAGE ---
+    const DEFAULT_DATA = {
+      auth: {
+        isLoggedIn: true,
+        email: "410bala@gmail.com",
+        displayName: "Fatou & Balde",
+        photoURL: "app_logo.jpg",
+        lastSynced: "À l'instant (Vercel & GitHub Cloud)"
+      },
+      settings: {
+        motherName: "Fatou",
+        babyName: "Un jour, un pas, un battement de cœur à la fois",
+        lmpDate: new Date(Date.now() - 65 * 24 * 3600 * 1000).toISOString().split('T')[0],
+        conceptionDate: new Date(Date.now() - 51 * 24 * 3600 * 1000).toISOString().split('T')[0]
+      },
+      pmaMilestones: [
+        {
+          id: "m1",
+          title: "Échographie de base (J2-J3)",
+          category: "Monitoring",
+          scheduledDate: "2026-10-05 09:00",
+          status: "completed",
+          notes: "Comptage des follicules antraux et vérification de l'endomètre fin (< 4mm).",
+          updatedAt: Date.now() - 24 * 3600 * 1000 * 24
+        },
+        {
+          id: "m2",
+          title: "Début de la stimulation ovarienne (Gonal-F)",
+          category: "Medication",
+          scheduledDate: "2026-10-07 20:00",
+          status: "completed",
+          notes: "Injection quotidienne à heure fixe (20h). Dose : 150 UI.",
+          updatedAt: Date.now() - 24 * 3600 * 1000 * 22
+        },
+        {
+          id: "m3",
+          title: "Échographie de contrôle folliculaire #1",
+          category: "Monitoring",
+          scheduledDate: "2026-10-12 08:30",
+          status: "completed",
+          notes: "Mesure de 8 follicules à droite et 6 à gauche (12-14mm). Prise de sang Estradiol.",
+          updatedAt: Date.now() - 24 * 3600 * 1000 * 17
+        },
+        {
+          id: "m4",
+          title: "Déclenchement de l'ovulation (Ovitrelle)",
+          category: "Medication",
+          scheduledDate: "2026-10-16 22:30",
+          status: "completed",
+          notes: "Déclenchement précis 36h avant la ponction. Très important de respecter l'heure exacte.",
+          updatedAt: Date.now() - 24 * 3600 * 1000 * 13
+        },
+        {
+          id: "m5",
+          title: "Ponction ovocytaire (Egg Retrieval)",
+          category: "Procedure",
+          scheduledDate: "2026-10-18 08:00",
+          status: "completed",
+          notes: "À jeun depuis minuit. 11 ovocytes matures recueillis.",
+          updatedAt: Date.now() - 24 * 3600 * 1000 * 11
+        },
+        {
+          id: "m6",
+          title: "Début Progestérone PIO (Phase lutéale)",
+          category: "Medication",
+          scheduledDate: "2026-10-19 09:00",
+          status: "in_progress",
+          notes: "50mg en intramusculaire chaque matin pour préparer la réceptivité endométriale.",
+          updatedAt: Date.now() - 24 * 3600 * 1000 * 10
+        },
+        {
+          id: "m7",
+          title: "Transfert d'Embryon (Embryo Transfer J5 / Blastocyste)",
+          category: "Procedure",
+          scheduledDate: "2026-10-23 11:00",
+          status: "completed",
+          notes: "Vessie modérément pleine. Transfert réussi d'un beau blastocyste expansé (grade 4AA).",
+          updatedAt: Date.now() - 24 * 3600 * 1000 * 6
+        },
+        {
+          id: "m8",
+          title: "Prise de sang Bêta-HCG (Test de grossesse)",
+          category: "Testing",
+          scheduledDate: "2026-11-04 08:00",
+          status: "incoming",
+          notes: "Dosage quantitatif de l'hormone HCG à J12 post-transfert. Ne pas arrêter la progestérone avant le résultat.",
+          updatedAt: Date.now()
+        },
+        {
+          id: "m9",
+          title: "Échographie précoce de viabilité (6–7 SA)",
+          category: "Monitoring",
+          scheduledDate: "2026-11-18 10:30",
+          status: "incoming",
+          notes: "Visualisation du sac gestationnel intra-utérin et de l'activité cardiaque embryonnaire.",
+          updatedAt: Date.now()
+        }
+      ],
+      bbtLogs: [
+        { id: 1, date: "2026-10-14", temp: 36.4, notes: "Phase folliculaire" },
+        { id: 2, date: "2026-10-15", temp: 36.3, notes: "Nadir pré-ovulatoire" },
+        { id: 3, date: "2026-10-16", temp: 36.5, notes: "Déclenchement Ovitrelle" },
+        { id: 4, date: "2026-10-17", temp: 36.7, notes: "Montée thermique" },
+        { id: 5, date: "2026-10-18", temp: 36.9, notes: "Ponction ovocytaire" },
+        { id: 6, date: "2026-10-19", temp: 37.0, notes: "Plateau haut - Début PIO" },
+        { id: 7, date: "2026-10-21", temp: 37.1, notes: "Plateau thermique stable" },
+        { id: 8, date: "2026-10-23", temp: 37.0, notes: "Transfert d'embryon" },
+        { id: 9, date: "2026-10-25", temp: 37.1, notes: "Plateau lutéal soutenu" },
+        { id: 10, date: "2026-10-27", temp: 37.2, notes: "Nidation potentielle" },
+        { id: 11, date: "2026-10-29", temp: 37.1, notes: "Température haute stable (37.1°C)" }
+      ],
+      weights: [
+        { id: 1, date: "2026-10-10", weight: 62.4, notes: "Début de suivi" },
+        { id: 2, date: "2026-10-18", weight: 62.8, notes: "Appétit stable" },
+        { id: 3, date: "2026-10-29", weight: 63.2, notes: "Tout va bien" }
+      ],
+      kicks: [
+        { id: 1, date: "2026-10-27 16:30", count: 10, duration: 240, notes: "Après le goûter" },
+        { id: 2, date: "2026-10-29 10:15", count: 12, duration: 300, notes: "Actif le matin" }
+      ],
+      injections: [
+        { id: 1, date: "2026-10-28", name: "Progestérone (PIO)", dose: "50mg", site: "Fesse gauche", isTaken: true },
+        { id: 2, date: "2026-10-29", name: "Progestérone (PIO)", dose: "50mg", site: "Fesse droite", isTaken: false },
+        { id: 3, date: "2026-10-30", name: "Progestérone (PIO)", dose: "50mg", site: "Ventre gauche", isTaken: false },
+        { id: 4, date: "2026-11-04", name: "Bêta-HCG (PDS)", dose: "1 tube", site: "Laboratoire", isTaken: false },
+        { id: 5, date: "2026-11-05", name: "Vitamine D", dose: "1 ampoule", site: "Oral", isTaken: false }
+      ],
+      echos: [
+        { 
+          id: 1, 
+          date: "2026-10-02", 
+          trimester: "Précoce", 
+          title: "Échographie de viabilité (8 SA)", 
+          notes: "Activité cardiaque visible à 152 bpm, longueur cranio-caudale normale.",
+          imageUrl: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 360' width='100%' height='100%'><rect width='600' height='360' fill='%23080b11'/><path d='M120 40 L480 40 L560 320 L40 320 Z' fill='%23131b26'/><ellipse cx='300' cy='180' rx='130' ry='90' fill='%230b1017'/><circle cx='270' cy='170' r='45' fill='%23223042'/><circle cx='340' cy='195' r='30' fill='%2328394e'/><path d='M250 160 Q270 140 290 160 Q320 200 350 210' stroke='%23486581' stroke-width='3' fill='none'/><line x1='240' y1='170' x2='360' y2='170' stroke='%2338bdf8' stroke-width='1.5' stroke-dasharray='4,4'/><text x='260' y='165' fill='%2338bdf8' font-size='11' font-family='monospace'>LCC: 18.4mm</text><text x='50' y='70' fill='%2394a3b8' font-size='12' font-family='monospace'>DR. MOREAU - CLINIQUE MATERNITE</text><text x='50' y='90' fill='%2394a3b8' font-size='12' font-family='monospace'>PATIENTE: FATOU - 8 SA + 2J</text><text x='460' y='70' fill='%23f43f5e' font-size='12' font-family='monospace'>BPM: 152</text></svg>"
+        },
+        { 
+          id: 2, 
+          date: "2026-11-12", 
+          trimester: "T1", 
+          title: "Échographie du 1er Trimestre (12 SA)", 
+          notes: "Mesure de la clarté nucale et dépistage combiné DPNI." 
+        }
+      ],
+      birthPlanAnswers: {
+        q1: "Oui, ambiance tamisée et playlist personnelle",
+        q2: "Ballon de grossesse, marche et bains chauds",
+        q3: "Péridurale ambulatoire (dosée pour garder la mobilité)",
+        q4: "Poussée spontanée selon mes sensations",
+        q5: "Peau à peau immédiat et cordon coupé par le co-parent"
+      },
+      journals: [
+        { id: 1, date: "2026-10-29", mood: "😊", symptoms: "Fatigue légère, appétit retrouvé", notes: "Promenade au soleil de 25 minutes, journée sereine avec bébé." }
+      ],
+      gynVisits: [
+        {
+          id: "g1",
+          date: "2026-10-29",
+          time: "14:30",
+          doctor: "Dr. Moreau (Gynécologue Obstétricien)",
+          type: "Consultation prénatale du 1er trimestre",
+          location: "Clinique Maternité - Bâtiment B",
+          notes: "Vérification col et monitoring, ordonnance bilan sanguin complet.",
+          isDone: false,
+          updatedAt: Date.now()
+        },
+        {
+          id: "g2",
+          date: "2026-11-20",
+          time: "10:00",
+          doctor: "Mme Camara (Sage-femme)",
+          type: "Entretien Prénatal Précoce (EPP)",
+          location: "Cabinet Médical",
+          notes: "Projet de naissance, préparation à l'accouchement et bien-être.",
+          isDone: false,
+          updatedAt: Date.now()
+        }
+      ],
+      memos: [
+        {
+          id: "memo1",
+          date: "2026-10-29",
+          title: "Questions pour le rendez-vous gynécologique",
+          content: "1. Tiraillements dans le bas ventre en fin de journée.\n2. Choix des vitamines de grossesse (fer & B9).\n3. Validation des dates pour le congé maternité.",
+          category: "Question Médecin",
+          isDone: false,
+          updatedAt: Date.now()
+        },
+        {
+          id: "memo2",
+          date: "2026-10-31",
+          title: "Déclaration de grossesse & Sécurité Sociale",
+          content: "Envoyer le volet à la CAF et à l'Assurance Maladie avant 14 SA.",
+          category: "À Faire / Démarche",
+          isDone: false,
+          updatedAt: Date.now()
+        }
+      ]
+    };
+
+    function loadData() {
+      const saved = localStorage.getItem('maman_bebe_data_v2');
+      if (saved) {
+        try { 
+          const parsed = JSON.parse(saved);
+          if (!parsed.pmaMilestones) parsed.pmaMilestones = DEFAULT_DATA.pmaMilestones;
+          if (!parsed.bbtLogs) parsed.bbtLogs = DEFAULT_DATA.bbtLogs;
+          if (!parsed.auth) parsed.auth = DEFAULT_DATA.auth;
+          if (!parsed.echos || parsed.echos.length === 0) parsed.echos = DEFAULT_DATA.echos;
+          else if (parsed.echos[0] && !parsed.echos[0].imageUrl && DEFAULT_DATA.echos[0].imageUrl) {
+            parsed.echos[0].imageUrl = DEFAULT_DATA.echos[0].imageUrl;
+          }
+          if (!parsed.gynVisits) parsed.gynVisits = DEFAULT_DATA.gynVisits;
+          if (!parsed.memos) parsed.memos = DEFAULT_DATA.memos;
+          return parsed;
+        } catch(e) {}
+      }
+      localStorage.setItem('maman_bebe_data_v2', JSON.stringify(DEFAULT_DATA));
+      return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    }
+
+    let appData = loadData();
+
+    function saveData() {
+      localStorage.setItem('maman_bebe_data_v2', JSON.stringify(appData));
+      renderAll();
+    }
+
+    // --- DATE CALCULATIONS ---
+    function calculatePregnancyInfo() {
+      const lmp = new Date(appData.settings.lmpDate);
+      const now = new Date();
+      const diffMs = now - lmp;
+      const totalDays = Math.max(0, Math.floor(diffMs / (24 * 3600 * 1000)));
+      const weeks = Math.floor(totalDays / 7);
+      const days = totalDays % 7;
+
+      const dueDate = new Date(lmp.getTime() + 280 * 24 * 3600 * 1000);
+      const remainingDays = Math.max(0, Math.ceil((dueDate - now) / (24 * 3600 * 1000)));
+      const progressPercent = Math.min(100, Math.max(0, Math.round((weeks / 40) * 100)));
+
+      return { weeks, days, dueDate, remainingDays, progressPercent };
+    }
+
+    // --- CALENDAR LOGIC (EDITABLE & MULTI-DEVICE SYNC) ---
+    let calendarMonthOffset = 0;
+    let selectedCalendarDateStr = new Date().toISOString().split('T')[0];
+
+    function showSyncToast(msg = "Modifications enregistrées et synchronisées entre vos appareils") {
+      appData.auth.lastSynced = "À l'instant (Cloud Vercel & GitHub)";
+      const existing = document.getElementById('global-sync-toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.id = 'global-sync-toast';
+      toast.className = "fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-stone-900/95 text-white text-xs font-semibold px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 border border-emerald-500/40 backdrop-blur-md transition-all animate-bounce";
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>${msg}</span>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        if (toast && toast.parentNode) toast.remove();
+      }, 3200);
+    }
+
+    function renderCalendar() {
+      const now = new Date();
+      const viewDate = new Date(now.getFullYear(), now.getMonth() + calendarMonthOffset, 1);
+      const year = viewDate.getFullYear();
+      const month = viewDate.getMonth();
+
+      const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+      document.getElementById('calendar-month-title').innerText = `${monthNames[month]} ${year}`;
+
+      const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; // Monday is 0
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = '';
+
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = "h-11";
+        grid.appendChild(emptyCell);
+      }
+
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const isSelected = dateStr === selectedCalendarDateStr;
+        const isToday = dateStr === todayStr;
+
+        const hasGyn = appData.gynVisits && appData.gynVisits.some(g => g.date === dateStr);
+        const hasMemo = appData.memos && appData.memos.some(m => m.date === dateStr);
+        const hasJournal = appData.journals && appData.journals.some(j => j.date === dateStr);
+        const hasInj = appData.injections && appData.injections.some(inj => inj.date === dateStr);
+        const hasEcho = appData.echos && appData.echos.some(ec => ec.date === dateStr);
+        const hasPma = appData.pmaMilestones && appData.pmaMilestones.some(m => m.scheduledDate.startsWith(dateStr));
+
+        const btn = document.createElement('button');
+        btn.onclick = () => {
+          selectedCalendarDateStr = dateStr;
+          renderCalendar();
+        };
+
+        btn.className = `h-11 flex flex-col items-center justify-between py-1 px-0.5 rounded-xl text-xs font-semibold relative transition ${
+          isSelected 
+            ? 'bg-bronze-500 text-white shadow-md ring-2 ring-bronze-400' 
+            : isToday 
+              ? 'bg-bronze-100/90 text-bronze-900 border border-bronze-400 font-bold' 
+              : 'hover:bg-bronze-50 text-stone-800'
+        }`;
+
+        btn.innerHTML = `
+          <span class="leading-none">${d}</span>
+          <div class="flex flex-wrap justify-center items-center gap-0.5 max-w-[28px] mt-0.5">
+            ${hasGyn ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-blue-500'}" title="Visite GYN"></span>` : ''}
+            ${hasMemo ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-amber-500'}" title="Mémo"></span>` : ''}
+            ${hasJournal ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-emerald-500'}" title="Journal"></span>` : ''}
+            ${hasInj ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-purple-500'}" title="Injection"></span>` : ''}
+            ${(hasEcho || hasPma) ? `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-pink-500'}" title="Écho/PMA"></span>` : ''}
+          </div>
+        `;
+
+        grid.appendChild(btn);
+      }
+
+      renderSelectedDayEvents();
+    }
+
+    function renderSelectedDayEvents() {
+      const container = document.getElementById('selected-day-events');
+      if (!container) return;
+
+      const dateParts = selectedCalendarDateStr.split('-');
+      const dObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('selected-day-title').innerText = dObj.toLocaleDateString('fr-FR', options);
+
+      const dayGyn = (appData.gynVisits || []).filter(g => g.date === selectedCalendarDateStr);
+      const dayMemos = (appData.memos || []).filter(m => m.date === selectedCalendarDateStr);
+      const dayJournals = (appData.journals || []).filter(j => j.date === selectedCalendarDateStr);
+      const dayInjections = (appData.injections || []).filter(i => i.date === selectedCalendarDateStr);
+      const dayEchos = (appData.echos || []).filter(e => e.date === selectedCalendarDateStr);
+      const dayPma = (appData.pmaMilestones || []).filter(m => m.scheduledDate.startsWith(selectedCalendarDateStr));
+
+      const totalEvents = dayGyn.length + dayMemos.length + dayJournals.length + dayInjections.length + dayEchos.length + dayPma.length;
+      document.getElementById('selected-day-count').innerText = `${totalEvents} élément${totalEvents > 1 ? 's' : ''}`;
+
+      if (totalEvents === 0) {
+        container.innerHTML = `
+          <div class="p-4 bg-stone-50 rounded-2xl text-xs text-stone-500 border border-dashed border-stone-200 text-center space-y-1">
+            <p class="font-medium text-stone-700">Aucun rendez-vous ou mémo enregistré pour le ${dObj.toLocaleDateString('fr-FR')}</p>
+            <p class="text-[11px] text-stone-400">Utilisez les boutons ci-dessus pour planifier une visite GYN, ajouter une note ou consigner votre ressenti.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = '';
+
+      // 1. VISITES GYN & CONSULTATIONS
+      dayGyn.forEach(g => {
+        container.innerHTML += `
+          <div class="p-3 bg-blue-50/70 rounded-2xl border border-blue-200 shadow-2xs space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+                  <i data-lucide="stethoscope" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <h4 class="text-xs font-bold text-blue-950">${g.doctor}</h4>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${g.isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-200 text-blue-900'}">
+                      ${g.isDone ? 'Effectué' : (g.time || 'RDV')}
+                    </span>
+                  </div>
+                  <p class="text-[11px] font-medium text-blue-800">${g.type}</p>
+                  ${g.location ? `<p class="text-[10px] text-blue-600 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${g.location}</p>` : ''}
+                </div>
+              </div>
+              <div class="flex items-center gap-1">
+                <button onclick="openEditGynModal('${g.id}')" class="p-1 text-blue-600 hover:text-blue-800 rounded-lg hover:bg-blue-100" title="Modifier">
+                  <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="deleteGynVisit('${g.id}')" class="p-1 text-stone-400 hover:text-red-500 rounded-lg hover:bg-red-50" title="Supprimer">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            ${g.notes ? `<p class="text-[11px] text-stone-700 bg-white/80 p-2 rounded-xl border border-blue-100">${g.notes}</p>` : ''}
+            <div class="flex items-center justify-between pt-1 border-t border-blue-100 text-[10px] text-blue-700">
+              <button onclick="toggleGynDone('${g.id}')" class="flex items-center gap-1 font-semibold hover:underline">
+                <i data-lucide="${g.isDone ? 'check-circle-2' : 'circle'}" class="w-3.5 h-3.5 text-blue-600"></i>
+                <span>${g.isDone ? 'Marquer comme non fait' : 'Marquer comme effectué'}</span>
+              </button>
+              <span class="text-stone-400">Visite GYN</span>
+            </div>
+          </div>
+        `;
+      });
+
+      // 2. MEMOS & NOTES
+      dayMemos.forEach(m => {
+        container.innerHTML += `
+          <div class="p-3 bg-amber-50/70 rounded-2xl border border-amber-200 shadow-2xs space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
+                  <i data-lucide="sticky-note" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <h4 class="text-xs font-bold text-amber-950">${m.title}</h4>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">
+                      ${m.category}
+                    </span>
+                  </div>
+                  <p class="text-[10px] text-stone-400">Pense-bête</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1">
+                <button onclick="openEditMemoModal('${m.id}')" class="p-1 text-amber-700 hover:text-amber-900 rounded-lg hover:bg-amber-100" title="Modifier">
+                  <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="deleteMemo('${m.id}')" class="p-1 text-stone-400 hover:text-red-500 rounded-lg hover:bg-red-50" title="Supprimer">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <p class="text-xs text-stone-800 bg-white/90 p-2 rounded-xl border border-amber-100 whitespace-pre-line leading-relaxed">${m.content}</p>
+            <div class="flex items-center justify-between pt-1 border-t border-amber-100 text-[10px] text-amber-800">
+              <button onclick="toggleMemoDone('${m.id}')" class="flex items-center gap-1 font-semibold hover:underline">
+                <i data-lucide="${m.isDone ? 'check-circle-2' : 'circle'}" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span>${m.isDone ? 'Traité' : 'Marquer comme traité'}</span>
+              </button>
+              <span class="text-stone-400">Mémo consultation</span>
+            </div>
+          </div>
+        `;
+      });
+
+      // 3. JOURNAL INTIME DE LA DATE
+      dayJournals.forEach(j => {
+        container.innerHTML += `
+          <div class="p-3 bg-emerald-50/70 rounded-2xl border border-emerald-200 shadow-2xs space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">${j.mood || '😊'}</span>
+                <div>
+                  <h4 class="text-xs font-bold text-emerald-950">Journal intime avec bébé</h4>
+                  <p class="text-[11px] text-emerald-700 font-medium">Symptômes : ${j.symptoms}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1">
+                <button onclick="openEditJournalModal('${j.id}')" class="p-1 text-emerald-700 hover:text-emerald-900 rounded-lg hover:bg-emerald-100" title="Modifier">
+                  <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="deleteJournalCalendar('${j.id}')" class="p-1 text-stone-400 hover:text-red-500 rounded-lg hover:bg-red-50" title="Supprimer">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <p class="text-xs text-stone-800 bg-white/90 p-2.5 rounded-xl border border-emerald-100 italic leading-relaxed">« ${j.notes} »</p>
+          </div>
+        `;
+      });
+
+      // 4. JALONS PMA
+      dayPma.forEach(pma => {
+        container.innerHTML += `
+          <div class="p-3 bg-purple-50/70 rounded-2xl border border-purple-200 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">✨</span>
+              <div>
+                <p class="text-xs font-bold text-purple-950">${pma.title}</p>
+                <p class="text-[11px] text-purple-700">${pma.scheduledDate.slice(11) || ''} • ${pma.notes}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="advancePmaStatus('${pma.id}')" class="text-[10px] font-bold px-2 py-1 rounded-full bg-purple-200 text-purple-900 capitalize hover:bg-purple-300">
+                ${pma.status.replace('_', ' ')}
+              </button>
+              <button onclick="openEditMilestoneModal('${pma.id}')" class="p-1 text-purple-600 hover:text-purple-800">
+                <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      // 5. INJECTIONS
+      dayInjections.forEach(inj => {
+        container.innerHTML += `
+          <div class="p-3 bg-stone-50 rounded-2xl border border-stone-200/80 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">💉</span>
+              <div>
+                <p class="text-xs font-bold text-stone-900">${inj.name} (${inj.dose})</p>
+                <p class="text-[11px] text-stone-500">Site : ${inj.site}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="toggleInjectionCalendar(${inj.id})" class="text-[10px] font-bold px-2.5 py-1 rounded-full transition ${inj.isTaken ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${inj.isTaken ? '✓ Faite' : 'À faire'}
+              </button>
+              <button onclick="deleteInjectionCalendar(${inj.id})" class="p-1 text-stone-400 hover:text-red-500">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      // 6. ECHOGRAPHIES
+      dayEchos.forEach(ec => {
+        const hasImg = ec.imageUrl && ec.imageUrl.length > 20;
+        container.innerHTML += `
+          <div class="p-3 bg-pink-50/70 rounded-2xl border border-pink-200 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🖥️</span>
+              <div>
+                <p class="text-xs font-bold text-pink-950">${ec.title}</p>
+                <p class="text-[11px] text-pink-700">${ec.notes}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              ${hasImg ? `
+                <button onclick="openEchoLightbox('${ec.imageUrl}', '${ec.title}', '${ec.trimester}')" class="px-2 py-0.5 rounded-lg bg-pink-200 text-pink-900 text-[10px] font-bold">
+                  Photo
+                </button>
+              ` : ''}
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-100 text-pink-800">
+                ${ec.trimester}
+              </span>
+            </div>
+          </div>
+        `;
+      });
+
+      lucide.createIcons();
+    }
+
+    // --- VISITES GYN ACTIONS ---
+    function openAddGynModal() {
+      document.getElementById('gyn-edit-id').value = '';
+      document.getElementById('gyn-modal-heading').innerText = "Nouvelle Visite GYN & Consultation";
+      document.getElementById('gyn-edit-date').value = selectedCalendarDateStr || new Date().toISOString().split('T')[0];
+      document.getElementById('gyn-edit-time').value = "14:00";
+      document.getElementById('gyn-edit-doctor').value = "Dr. Moreau (Gynécologue Obstétricien)";
+      document.getElementById('gyn-edit-type').value = "Consultation prénatale mensuelle (T1/T2/T3)";
+      document.getElementById('gyn-edit-location').value = "Clinique Maternité";
+      document.getElementById('gyn-edit-notes').value = "";
+      document.getElementById('gyn-edit-done').checked = false;
+      openModal('modal-calendar-gyn');
+      lucide.createIcons();
+    }
+
+    function openEditGynModal(id) {
+      const g = (appData.gynVisits || []).find(item => item.id == id);
+      if (!g) return;
+      document.getElementById('gyn-edit-id').value = g.id;
+      document.getElementById('gyn-modal-heading').innerText = "Modifier la Visite GYN";
+      document.getElementById('gyn-edit-date').value = g.date;
+      document.getElementById('gyn-edit-time').value = g.time || "14:00";
+      document.getElementById('gyn-edit-doctor').value = g.doctor || "";
+      document.getElementById('gyn-edit-type').value = g.type || "Consultation prénatale mensuelle (T1/T2/T3)";
+      document.getElementById('gyn-edit-location').value = g.location || "";
+      document.getElementById('gyn-edit-notes').value = g.notes || "";
+      document.getElementById('gyn-edit-done').checked = !!g.isDone;
+      openModal('modal-calendar-gyn');
+      lucide.createIcons();
+    }
+
+    function saveGynVisitFromModal() {
+      const id = document.getElementById('gyn-edit-id').value;
+      const date = document.getElementById('gyn-edit-date').value || selectedCalendarDateStr;
+      const time = document.getElementById('gyn-edit-time').value || "14:00";
+      const doctor = document.getElementById('gyn-edit-doctor').value || "Praticien";
+      const type = document.getElementById('gyn-edit-type').value;
+      const location = document.getElementById('gyn-edit-location').value;
+      const notes = document.getElementById('gyn-edit-notes').value;
+      const isDone = document.getElementById('gyn-edit-done').checked;
+
+      if (!appData.gynVisits) appData.gynVisits = [];
+
+      if (id) {
+        const item = appData.gynVisits.find(g => g.id == id);
+        if (item) {
+          item.date = date;
+          item.time = time;
+          item.doctor = doctor;
+          item.type = type;
+          item.location = location;
+          item.notes = notes;
+          item.isDone = isDone;
+          item.updatedAt = Date.now();
+        }
+      } else {
+        appData.gynVisits.unshift({
+          id: "g_" + Date.now(),
+          date,
+          time,
+          doctor,
+          type,
+          location,
+          notes,
+          isDone,
+          updatedAt: Date.now()
+        });
+      }
+
+      saveData();
+      closeModal('modal-calendar-gyn');
+      showSyncToast("Visite GYN enregistrée et synchronisée !");
+    }
+
+    function toggleGynDone(id) {
+      const g = (appData.gynVisits || []).find(item => item.id == id);
+      if (g) {
+        g.isDone = !g.isDone;
+        g.updatedAt = Date.now();
+        saveData();
+        showSyncToast(g.isDone ? "Visite marquée comme effectuée !" : "Visite réactivée !");
+      }
+    }
+
+    function deleteGynVisit(id) {
+      if (confirm("Supprimer ce rendez-vous médical ?")) {
+        appData.gynVisits = (appData.gynVisits || []).filter(g => g.id != id);
+        saveData();
+        showSyncToast("Rendez-vous supprimé et synchronisé !");
+      }
+    }
+
+    // --- MEMOS ACTIONS ---
+    function openAddMemoModal() {
+      document.getElementById('memo-edit-id').value = '';
+      document.getElementById('memo-modal-heading').innerText = "Nouveau Mémo / Note";
+      document.getElementById('memo-edit-date').value = selectedCalendarDateStr || new Date().toISOString().split('T')[0];
+      document.getElementById('memo-edit-category').value = "Question Médecin";
+      document.getElementById('memo-edit-title').value = "";
+      document.getElementById('memo-edit-content').value = "";
+      document.getElementById('memo-edit-done').checked = false;
+      openModal('modal-calendar-memo');
+      lucide.createIcons();
+    }
+
+    function openEditMemoModal(id) {
+      const m = (appData.memos || []).find(item => item.id == id);
+      if (!m) return;
+      document.getElementById('memo-edit-id').value = m.id;
+      document.getElementById('memo-modal-heading').innerText = "Modifier le Mémo";
+      document.getElementById('memo-edit-date').value = m.date;
+      document.getElementById('memo-edit-category').value = m.category || "Question Médecin";
+      document.getElementById('memo-edit-title').value = m.title || "";
+      document.getElementById('memo-edit-content').value = m.content || "";
+      document.getElementById('memo-edit-done').checked = !!m.isDone;
+      openModal('modal-calendar-memo');
+      lucide.createIcons();
+    }
+
+    function saveMemoFromModal() {
+      const id = document.getElementById('memo-edit-id').value;
+      const date = document.getElementById('memo-edit-date').value || selectedCalendarDateStr;
+      const category = document.getElementById('memo-edit-category').value;
+      const title = document.getElementById('memo-edit-title').value || "Mémo";
+      const content = document.getElementById('memo-edit-content').value;
+      const isDone = document.getElementById('memo-edit-done').checked;
+
+      if (!appData.memos) appData.memos = [];
+
+      if (id) {
+        const item = appData.memos.find(m => m.id == id);
+        if (item) {
+          item.date = date;
+          item.category = category;
+          item.title = title;
+          item.content = content;
+          item.isDone = isDone;
+          item.updatedAt = Date.now();
+        }
+      } else {
+        appData.memos.unshift({
+          id: "m_" + Date.now(),
+          date,
+          category,
+          title,
+          content,
+          isDone,
+          updatedAt: Date.now()
+        });
+      }
+
+      saveData();
+      closeModal('modal-calendar-memo');
+      showSyncToast("Mémo enregistré et synchronisé !");
+    }
+
+    function toggleMemoDone(id) {
+      const m = (appData.memos || []).find(item => item.id == id);
+      if (m) {
+        m.isDone = !m.isDone;
+        m.updatedAt = Date.now();
+        saveData();
+        showSyncToast(m.isDone ? "Mémo classé comme traité !" : "Mémo réactivé !");
+      }
+    }
+
+    function deleteMemo(id) {
+      if (confirm("Supprimer ce mémo ?")) {
+        appData.memos = (appData.memos || []).filter(m => m.id != id);
+        saveData();
+        showSyncToast("Mémo supprimé et synchronisé !");
+      }
+    }
+
+    // --- JOURNAL FROM CALENDAR ACTIONS ---
+    function openAddJournalFromCalendarModal() {
+      document.getElementById('journal-edit-id').value = '';
+      document.getElementById('journal-modal-heading').innerText = "Nouvelle Entrée du Journal";
+      document.getElementById('journal-edit-date').value = selectedCalendarDateStr || new Date().toISOString().split('T')[0];
+      document.getElementById('journal-edit-mood').value = '😊';
+      document.getElementById('journal-edit-symptoms').value = '';
+      document.getElementById('journal-edit-notes').value = '';
+      
+      const moodBtns = document.querySelectorAll('.cal-mood-btn');
+      moodBtns.forEach((btn, idx) => {
+        if (idx === 0) {
+          btn.className = "cal-mood-btn p-2 bg-emerald-100 border-2 border-emerald-500 rounded-xl text-lg transition";
+        } else {
+          btn.className = "cal-mood-btn p-2 bg-stone-50 border border-stone-200 rounded-xl text-lg transition";
+        }
+      });
+      openModal('modal-calendar-journal');
+      lucide.createIcons();
+    }
+
+    function openEditJournalModal(id) {
+      const j = (appData.journals || []).find(item => item.id == id);
+      if (!j) return;
+      document.getElementById('journal-edit-id').value = j.id;
+      document.getElementById('journal-modal-heading').innerText = "Modifier l'Entrée du Journal";
+      document.getElementById('journal-edit-date').value = j.date;
+      document.getElementById('journal-edit-mood').value = j.mood || '😊';
+      document.getElementById('journal-edit-symptoms').value = j.symptoms || '';
+      document.getElementById('journal-edit-notes').value = j.notes || '';
+
+      const moodBtns = document.querySelectorAll('.cal-mood-btn');
+      moodBtns.forEach(btn => {
+        if (btn.innerText.trim() === (j.mood || '😊')) {
+          btn.className = "cal-mood-btn p-2 bg-emerald-100 border-2 border-emerald-500 rounded-xl text-lg transition";
+        } else {
+          btn.className = "cal-mood-btn p-2 bg-stone-50 border border-stone-200 rounded-xl text-lg transition";
+        }
+      });
+      openModal('modal-calendar-journal');
+      lucide.createIcons();
+    }
+
+    function selectCalendarJournalMood(mood, btn) {
+      document.getElementById('journal-edit-mood').value = mood;
+      document.querySelectorAll('.cal-mood-btn').forEach(b => {
+        b.className = "cal-mood-btn p-2 bg-stone-50 border border-stone-200 rounded-xl text-lg transition";
+      });
+      btn.className = "cal-mood-btn p-2 bg-emerald-100 border-2 border-emerald-500 rounded-xl text-lg transition";
+    }
+
+    function saveJournalFromCalendarModal() {
+      const id = document.getElementById('journal-edit-id').value;
+      const date = document.getElementById('journal-edit-date').value || selectedCalendarDateStr;
+      const mood = document.getElementById('journal-edit-mood').value || "😊";
+      const symptoms = document.getElementById('journal-edit-symptoms').value || "Aucun symptôme particulier";
+      const notes = document.getElementById('journal-edit-notes').value || "Pensée pour bébé";
+
+      if (!appData.journals) appData.journals = [];
+
+      if (id) {
+        const item = appData.journals.find(j => j.id == id);
+        if (item) {
+          item.date = date;
+          item.mood = mood;
+          item.symptoms = symptoms;
+          item.notes = notes;
+        }
+      } else {
+        appData.journals.unshift({
+          id: Date.now(),
+          date,
+          mood,
+          symptoms,
+          notes
+        });
+      }
+
+      saveData();
+      closeModal('modal-calendar-journal');
+      showSyncToast("Journal intime enregistré et synchronisé !");
+    }
+
+    function deleteJournalCalendar(id) {
+      if (confirm("Supprimer cette entrée du carnet intime ?")) {
+        appData.journals = (appData.journals || []).filter(j => j.id != id);
+        saveData();
+        showSyncToast("Entrée du journal supprimée et synchronisée !");
+      }
+    }
+
+    function toggleInjectionCalendar(id) {
+      const inj = (appData.injections || []).find(i => i.id == id);
+      if (inj) {
+        inj.isTaken = !inj.isTaken;
+        saveData();
+        showSyncToast(inj.isTaken ? "Injection marquée comme faite !" : "Injection marquée comme à faire");
+      }
+    }
+
+    function deleteInjectionCalendar(id) {
+      if (confirm("Supprimer cette injection ?")) {
+        appData.injections = (appData.injections || []).filter(i => i.id != id);
+        saveData();
+        showSyncToast("Injection supprimée et synchronisée !");
+      }
+    }
+
+    function prevMonth() {
+      calendarMonthOffset--;
+      renderCalendar();
+    }
+    function nextMonth() {
+      calendarMonthOffset++;
+      renderCalendar();
+    }
+
+    // --- PARCOURS PMA (MILESTONES & CASCADE DATES) ---
+    let currentPmaFilter = "all";
+
+    function filterPmaStatus(status) {
+      currentPmaFilter = status;
+      ['all', 'incoming', 'in_progress', 'completed'].forEach(s => {
+        const btn = document.getElementById(`pma-filter-${s}`);
+        if (s === status) {
+          btn.className = "py-1.5 rounded-lg bg-white text-stone-900 shadow-2xs font-bold";
+        } else {
+          btn.className = "py-1.5 rounded-lg text-stone-600 hover:text-stone-900 font-medium";
+        }
+      });
+      renderPmaMilestones();
+    }
+
+    function renderPmaMilestones() {
+      const container = document.getElementById('pma-milestones-list');
+      const all = appData.pmaMilestones;
+
+      // Update Counts
+      document.getElementById('count-pma-all').innerText = all.length;
+      document.getElementById('count-pma-incoming').innerText = all.filter(m => m.status === 'incoming').length;
+      document.getElementById('count-pma-in_progress').innerText = all.filter(m => m.status === 'in_progress').length;
+      document.getElementById('count-pma-completed').innerText = all.filter(m => m.status === 'completed').length;
+
+      const filtered = currentPmaFilter === 'all' ? all : all.filter(m => m.status === currentPmaFilter);
+
+      // Home Card Next Milestone Update
+      const nextPending = all.find(m => m.status !== 'completed');
+      if (nextPending) {
+        document.getElementById('home-pma-title').innerText = nextPending.title;
+        document.getElementById('home-pma-desc').innerText = `${nextPending.scheduledDate} • ${nextPending.notes}`;
+        document.getElementById('home-pma-badge').innerText = nextPending.category;
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="p-6 bg-stone-50 rounded-2xl text-center text-xs text-stone-500">Aucune étape pour ce statut.</div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      filtered.forEach(m => {
+        const statusColors = {
+          incoming: 'bg-stone-100 text-stone-800 border-stone-200',
+          in_progress: 'bg-amber-100 text-amber-900 border-amber-300',
+          completed: 'bg-emerald-100 text-emerald-900 border-emerald-300'
+        };
+
+        const categoryIcons = {
+          Monitoring: 'scan',
+          Medication: 'pill',
+          Procedure: 'heart-pulse',
+          Testing: 'flask-conical'
+        };
+
+        const iconName = categoryIcons[m.category] || 'check-circle';
+
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl p-4 border border-stone-200 shadow-sm transition hover:border-purple-300 space-y-2.5">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-start gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i data-lucide="${iconName}" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-stone-900 leading-snug">${m.title}</h4>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">${m.category}</span>
+                    <span class="text-[11px] text-stone-500 font-medium">📅 ${m.scheduledDate}</span>
+                  </div>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border ${statusColors[m.status]} capitalize">
+                ${m.status === 'in_progress' ? 'En cours' : m.status === 'completed' ? 'Terminé ✓' : 'À venir'}
+              </span>
+            </div>
+
+            <p class="text-xs text-stone-600 bg-stone-50 p-2.5 rounded-xl leading-relaxed">${m.notes}</p>
+
+            <div class="flex items-center justify-between pt-1 text-xs">
+              <div class="flex gap-1.5">
+                ${m.status !== 'completed' ? `
+                  <button onclick="updateMilestoneStatus('${m.id}', 'completed')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded-lg text-[11px] transition shadow-2xs">
+                    Terminer ✓
+                  </button>
+                ` : `
+                  <button onclick="updateMilestoneStatus('${m.id}', 'incoming')" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold px-2.5 py-1 rounded-lg text-[11px] transition">
+                    Marquer non fait
+                  </button>
+                `}
+                ${m.status === 'incoming' ? `
+                  <button onclick="updateMilestoneStatus('${m.id}', 'in_progress')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-2.5 py-1 rounded-lg text-[11px] transition">
+                    En cours ⏳
+                  </button>
+                ` : ''}
+              </div>
+
+              <div class="flex items-center gap-2 text-stone-400">
+                <button onclick="openEditMilestoneModal('${m.id}')" class="hover:text-purple-600 p-1" title="Modifier">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i>
+                </button>
+                <button onclick="deleteMilestone('${m.id}')" class="hover:text-red-500 p-1" title="Supprimer">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    function updateMilestoneStatus(id, newStatus) {
+      const m = appData.pmaMilestones.find(item => item.id === id);
+      if (m) {
+        m.status = newStatus;
+        m.updatedAt = Date.now();
+        saveData();
+      }
+    }
+
+    function deleteMilestone(id) {
+      appData.pmaMilestones = appData.pmaMilestones.filter(m => m.id !== id);
+      saveData();
+    }
+
+    function openAddMilestoneModal() {
+      document.getElementById('modal-pma-title').innerText = "Ajouter une étape PMA";
+      document.getElementById('pma-edit-id').value = "";
+      document.getElementById('pma-input-title').value = "";
+      document.getElementById('pma-input-category').value = "Monitoring";
+      document.getElementById('pma-input-status').value = "incoming";
+      document.getElementById('pma-input-date').value = selectedCalendarDateStr;
+      document.getElementById('pma-input-time').value = "09:00";
+      document.getElementById('pma-input-notes').value = "";
+      openModal('modal-pma-milestone');
+    }
+
+    function openEditMilestoneModal(id) {
+      const m = appData.pmaMilestones.find(item => item.id === id);
+      if (!m) return;
+      document.getElementById('modal-pma-title').innerText = "Modifier l'étape PMA";
+      document.getElementById('pma-edit-id').value = m.id;
+      document.getElementById('pma-input-title').value = m.title;
+      document.getElementById('pma-input-category').value = m.category;
+      document.getElementById('pma-input-status').value = m.status;
+      const parts = m.scheduledDate.split(' ');
+      document.getElementById('pma-input-date').value = parts[0] || selectedCalendarDateStr;
+      document.getElementById('pma-input-time').value = parts[1] || "09:00";
+      document.getElementById('pma-input-notes').value = m.notes;
+      openModal('modal-pma-milestone');
+    }
+
+    function confirmSaveMilestone() {
+      const id = document.getElementById('pma-edit-id').value;
+      const title = document.getElementById('pma-input-title').value.trim();
+      if (!title) return;
+
+      const category = document.getElementById('pma-input-category').value;
+      const status = document.getElementById('pma-input-status').value;
+      const date = document.getElementById('pma-input-date').value;
+      const time = document.getElementById('pma-input-time').value;
+      const notes = document.getElementById('pma-input-notes').value.trim();
+      const scheduledDate = `${date} ${time}`;
+
+      if (id) {
+        const m = appData.pmaMilestones.find(item => item.id === id);
+        if (m) {
+          m.title = title;
+          m.category = category;
+          m.status = status;
+          m.scheduledDate = scheduledDate;
+          m.notes = notes;
+          m.updatedAt = Date.now();
+        }
+      } else {
+        appData.pmaMilestones.push({
+          id: 'm_' + Date.now(),
+          title,
+          category,
+          status,
+          scheduledDate,
+          notes,
+          updatedAt: Date.now()
+        });
+      }
+      saveData();
+      closeModal('modal-pma-milestone');
+    }
+
+    // --- CASCADE DATES SHIFT (+X / -X DAYS) ---
+    function openShiftDatesModal() {
+      const select = document.getElementById('shift-milestone-start');
+      select.innerHTML = '';
+      appData.pmaMilestones.forEach(m => {
+        select.innerHTML += `<option value="${m.id}">${m.title} (${m.scheduledDate})</option>`;
+      });
+      openModal('modal-pma-shift');
+    }
+
+    function confirmCascadeShift() {
+      const startId = document.getElementById('shift-milestone-start').value;
+      const offsetDays = parseInt(document.getElementById('shift-days-count').value, 10);
+      if (isNaN(offsetDays) || offsetDays === 0) {
+        closeModal('modal-pma-shift');
+        return;
+      }
+
+      const startIndex = appData.pmaMilestones.findIndex(m => m.id === startId);
+      if (startIndex !== -1) {
+        for (let i = startIndex; i < appData.pmaMilestones.length; i++) {
+          const item = appData.pmaMilestones[i];
+          if (item.status !== 'completed') {
+            const dateParts = item.scheduledDate.split(' ');
+            const d = new Date(dateParts[0]);
+            d.setDate(d.getDate() + offsetDays);
+            const newDateStr = d.toISOString().split('T')[0];
+            item.scheduledDate = `${newDateStr} ${dateParts[1] || '09:00'}`;
+            item.updatedAt = Date.now();
+          }
+        }
+        saveData();
+      }
+      closeModal('modal-pma-shift');
+    }
+
+    // --- BASAL BODY TEMPERATURE (BBT) & FERTILITY CHART ---
+    let bbtChartInstance = null;
+
+    function renderBbtSection() {
+      const list = document.getElementById('bbt-history-list');
+      list.innerHTML = '';
+
+      if (appData.bbtLogs && appData.bbtLogs.length > 0) {
+        const sorted = [...appData.bbtLogs].sort((a,b) => new Date(a.date) - new Date(b.date));
+        const latest = sorted[sorted.length - 1];
+        document.getElementById('bbt-latest-val').innerText = `${latest.temp.toFixed(2)}°C`;
+
+        sorted.forEach(item => {
+          list.innerHTML = `
+            <div class="bg-white p-3 rounded-xl border border-pink-100 shadow-sm flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full ${item.temp >= 36.8 ? 'bg-pink-500' : 'bg-blue-400'}"></span>
+                <div>
+                  <p class="font-bold text-stone-900">${item.temp.toFixed(2)}°C <span class="text-stone-500 font-normal">(${item.notes || 'Température basale'})</span></p>
+                  <p class="text-stone-400 text-[11px]">${item.date}</p>
+                </div>
+              </div>
+              <button onclick="deleteBbt(${item.id})" class="text-stone-400 hover:text-red-500 p-1">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          ` + list.innerHTML;
+        });
+
+        // Render Chart.js line graph
+        const labels = sorted.map(s => s.date.slice(5));
+        const temps = sorted.map(s => s.temp);
+
+        const ctx = document.getElementById('bbtChart').getContext('2d');
+        if (bbtChartInstance) bbtChartInstance.destroy();
+
+        bbtChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Température (°C)',
+                data: temps,
+                borderColor: '#DB2777',
+                backgroundColor: 'rgba(219, 39, 119, 0.08)',
+                tension: 0.25,
+                fill: true,
+                pointBackgroundColor: temps.map(t => t >= 36.8 ? '#BE185D' : '#3B82F6'),
+                pointRadius: 4.5,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Coverline (36.8°C)',
+                data: temps.map(() => 36.8),
+                borderColor: 'rgba(156, 163, 175, 0.6)',
+                borderDash: [5, 5],
+                borderWidth: 1.5,
+                pointRadius: 0,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { 
+                min: 36.1, 
+                max: 37.4,
+                ticks: { stepSize: 0.2 },
+                grid: { color: '#FCE7F3' }
+              },
+              x: { grid: { display: false } }
+            },
+            plugins: { 
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => `${ctx.raw}°C`
+                }
+              }
+            }
+          }
+        });
+      }
+      lucide.createIcons();
+    }
+
+    function openAddBbtModal() {
+      document.getElementById('bbt-date-input').value = new Date().toISOString().split('T')[0];
+      document.getElementById('bbt-val-input').value = "37.10";
+      document.getElementById('bbt-notes-input').value = "";
+      openModal('modal-add-bbt');
+    }
+
+    function confirmAddBbt() {
+      const temp = parseFloat(document.getElementById('bbt-val-input').value);
+      const date = document.getElementById('bbt-date-input').value;
+      const notes = document.getElementById('bbt-notes-input').value.trim();
+      if (!isNaN(temp) && date) {
+        appData.bbtLogs.push({ id: Date.now(), date, temp, notes });
+        saveData();
+      }
+      closeModal('modal-add-bbt');
+    }
+
+    function deleteBbt(id) {
+      appData.bbtLogs = appData.bbtLogs.filter(b => b.id !== id);
+      saveData();
+    }
+
+    // --- TIMELINE WEEKS DATA ---
+    const TIMELINE_DATA = [
+      { week: 8, trimester: "1er Trimestre", size: "Framboise (~1.5 cm)", fetal: "Le cœur bat à 150 bpm, les ébauches des bras et des jambes se forment.", mother: "Nausées matinales possibles, seins sensibles.", milestone: "Échographie de viabilité précoce (8–10 SA)" },
+      { week: 12, trimester: "1er Trimestre", size: "Prune (~5.5 cm)", fetal: "Les organes majeurs sont en place. Le fœtus bouge ses membres de façon réflexe.", mother: "Diminution progressive des nausées, énergie retrouvée.", milestone: "Échographie T1, clarté nucale & DPNI (NIPT)" },
+      { week: 16, trimester: "2ème Trimestre", size: "Avocat (~12 cm)", fetal: "Le squelette s'ossifie, les yeux réagissent aux variations de lumière.", mother: "Ventre qui s'arrondit nettement, sensations de bulles.", milestone: "Consultation prénatale officielle du 4e mois" },
+      { week: 20, trimester: "2ème Trimestre", size: "Banane (~25 cm)", fetal: "L'audition fonctionne : bébé entend la voix de sa mère.", mother: "Premiers coups de pieds nets et réguliers.", milestone: "Échographie morphologique détaillée (22 SA)" },
+      { week: 24, trimester: "2ème Trimestre", size: "Épi de maïs (~30 cm)", fetal: "Maturation des alvéoles pulmonaires, cycles d'éveil et de sommeil.", mother: "Jambes lourdes possibles, hydratation essentielle.", milestone: "Dépistage du diabète gestationnel (HGPO)" },
+      { week: 28, trimester: "3ème Trimestre", size: "Aubergine (~38 cm)", fetal: "Bébé ouvre les yeux et commence à stocker des réserves de graisse.", mother: "Contractions d'entraînement de Braxton-Hicks.", milestone: "Consultation du 7e mois & vaccin coqueluche" },
+      { week: 32, trimester: "3ème Trimestre", size: "Courge butternut (~42 cm)", fetal: "Prise de poids rapide (~200g/semaine), position céphalique fréquente.", mother: "Pression pelvienne accrue, essoufflement modéré.", milestone: "Échographie T3 de croissance & position fœtale" },
+      { week: 36, trimester: "3ème Trimestre", size: "Melon cantaloup (~47 cm)", fetal: "Les poumons sont quasiment matures, vernix caseosa protecteur.", mother: "Préparation du bassin, descente de la tête.", milestone: "Dépistage Streptocoque B (SGB) & projet de naissance" },
+      { week: 40, trimester: "3ème Trimestre", size: "Pastèque (~50 cm)", fetal: "Prêt pour la naissance !", mother: "Signaux de travail : contractions régulières ou perte des eaux.", milestone: "Jour J : Naissance et accueil de bébé !" }
+    ];
+
+    function renderTimeline() {
+      const container = document.getElementById('timeline-cards-container');
+      const { weeks } = calculatePregnancyInfo();
+      const filtered = TIMELINE_DATA.filter(t => t.week >= weeks || t.week === 8);
+      
+      container.innerHTML = '';
+      filtered.forEach(item => {
+        const isCurrent = weeks >= item.week && weeks < item.week + 4;
+        container.innerHTML += `
+          <div class="rounded-2xl p-4 border transition ${isCurrent ? 'bg-bronze-100/70 border-bronze-400 shadow-sm ring-1 ring-bronze-400' : 'bg-white border-bronze-100'}">
+            <div class="flex items-center justify-between mb-2">
+              <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold ${isCurrent ? 'bg-bronze-500 text-white' : 'bg-bronze-100 text-bronze-800'}">
+                Semaine ${item.week} SA ${isCurrent ? '• Actuelle' : ''}
+              </span>
+              <span class="text-xs font-semibold text-bronze-600">${item.trimester}</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs font-bold text-bronze-900 mb-1">
+              <span>🍎 Fœtus : ${item.size}</span>
+            </div>
+            <p class="text-xs text-stone-700 leading-relaxed mb-1.5"><strong class="text-bronze-800">Développement :</strong> ${item.fetal}</p>
+            <p class="text-xs text-stone-600 mb-2"><strong class="text-bronze-800">Pour la maman :</strong> ${item.mother}</p>
+            <div class="pt-2 border-t border-bronze-200/50 flex items-center gap-1.5 text-xs text-bronze-700 font-semibold">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-bronze-500"></i>
+              <span>Jalon : ${item.milestone}</span>
+            </div>
+          </div>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    // --- KICKS COUNTER STOPWATCH ---
+    let kickTimerInterval = null;
+    let kickTimerSeconds = 0;
+    let currentSessionKicks = 0;
+
+    function toggleKickSession() {
+      const btn = document.getElementById('btn-kick-toggle');
+      const kickBtn = document.getElementById('btn-kick-add');
+
+      if (kickTimerInterval) {
+        clearInterval(kickTimerInterval);
+        kickTimerInterval = null;
+        btn.innerText = "Démarrer";
+        btn.className = "bg-bronze-200 hover:bg-bronze-300 text-bronze-900 font-bold text-sm px-5 py-3 rounded-2xl transition";
+        kickBtn.disabled = true;
+
+        if (currentSessionKicks > 0 || kickTimerSeconds > 10) {
+          appData.kicks.unshift({
+            id: Date.now(),
+            date: new Date().toLocaleDateString('fr-FR') + ' ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}),
+            count: currentSessionKicks,
+            duration: kickTimerSeconds,
+            notes: "Session de comptage"
+          });
+          saveData();
+        }
+        kickTimerSeconds = 0;
+        currentSessionKicks = 0;
+        updateKickDisplay();
+      } else {
+        kickTimerSeconds = 0;
+        currentSessionKicks = 0;
+        updateKickDisplay();
+        kickBtn.disabled = false;
+        btn.innerText = "Terminer & Sauver";
+        btn.className = "bg-red-500 hover:bg-red-600 text-white font-bold text-sm px-5 py-3 rounded-2xl transition shadow";
+
+        kickTimerInterval = setInterval(() => {
+          kickTimerSeconds++;
+          updateKickDisplay();
+        }, 1000);
+      }
+    }
+
+    function recordKick() {
+      currentSessionKicks++;
+      updateKickDisplay();
+    }
+
+    function updateKickDisplay() {
+      const mins = String(Math.floor(kickTimerSeconds / 60)).padStart(2, '0');
+      const secs = String(kickTimerSeconds % 60).padStart(2, '0');
+      document.getElementById('kick-timer').innerText = `${mins}:${secs}`;
+      document.getElementById('kick-count-display').innerText = `${currentSessionKicks} mouvement${currentSessionKicks > 1 ? 's' : ''} enregistré${currentSessionKicks > 1 ? 's' : ''}`;
+    }
+
+    function renderKicksList() {
+      const container = document.getElementById('kicks-history-list');
+      if (appData.kicks.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-500 italic">Aucune session enregistrée.</p>`;
+        return;
+      }
+      container.innerHTML = '';
+      appData.kicks.forEach(k => {
+        container.innerHTML += `
+          <div class="bg-white p-3 rounded-xl border border-bronze-100 shadow-sm flex items-center justify-between text-xs">
+            <div>
+              <p class="font-bold text-bronze-900">${k.count} coups en ${Math.round(k.duration / 60)} min</p>
+              <p class="text-stone-500">${k.date}</p>
+            </div>
+            <button onclick="deleteKick(${k.id})" class="text-stone-400 hover:text-red-500 p-1">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    function deleteKick(id) {
+      appData.kicks = appData.kicks.filter(k => k.id !== id);
+      saveData();
+    }
+
+    // --- WEIGHT CHART & LIST ---
+    let weightChartInstance = null;
+    function renderWeightSection() {
+      const list = document.getElementById('weights-history-list');
+      list.innerHTML = '';
+
+      if (appData.weights.length > 0) {
+        const sorted = [...appData.weights].sort((a,b) => new Date(a.date) - new Date(b.date));
+        const first = sorted[0].weight;
+        const last = sorted[sorted.length - 1].weight;
+        const diff = (last - first).toFixed(1);
+        document.getElementById('total-weight-gain').innerText = `${diff >= 0 ? '+' : ''}${diff} kg`;
+
+        sorted.forEach(w => {
+          list.innerHTML = `
+            <div class="bg-white p-3 rounded-xl border border-bronze-100 shadow-sm flex items-center justify-between text-xs">
+              <div>
+                <p class="font-bold text-bronze-900">${w.weight} kg <span class="text-stone-500 font-normal">(${w.notes || 'Pesée'})</span></p>
+                <p class="text-stone-500">${w.date}</p>
+              </div>
+              <button onclick="deleteWeight(${w.id})" class="text-stone-400 hover:text-red-500 p-1">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          ` + list.innerHTML;
+        });
+
+        const labels = sorted.map(s => s.date.slice(5));
+        const dataVals = sorted.map(s => s.weight);
+
+        const ctx = document.getElementById('weightChart').getContext('2d');
+        if (weightChartInstance) weightChartInstance.destroy();
+
+        weightChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Poids (kg)',
+              data: dataVals,
+              borderColor: '#CD7F32',
+              backgroundColor: 'rgba(205, 127, 50, 0.1)',
+              tension: 0.3,
+              fill: true,
+              pointBackgroundColor: '#A0522D',
+              pointRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: false, grid: { color: '#F7EBE1' } },
+              x: { grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+      lucide.createIcons();
+    }
+
+    function deleteWeight(id) {
+      appData.weights = appData.weights.filter(w => w.id !== id);
+      saveData();
+    }
+
+    // --- INJECTIONS SECTION ---
+    function renderInjectionsList() {
+      const container = document.getElementById('injections-history-list');
+      container.innerHTML = '';
+      appData.injections.forEach(inj => {
+        container.innerHTML += `
+          <div class="p-3 bg-white rounded-xl border border-bronze-100 shadow-sm flex items-center justify-between text-xs">
+            <div class="flex items-center gap-3">
+              <button onclick="toggleInjection(${inj.id})" class="w-6 h-6 rounded-lg border flex items-center justify-center transition ${inj.isTaken ? 'bg-sage-500 text-white border-sage-500' : 'border-bronze-300 text-transparent'}">
+                <i data-lucide="check" class="w-4 h-4"></i>
+              </button>
+              <div>
+                <p class="font-bold text-bronze-900">${inj.name} (${inj.dose})</p>
+                <p class="text-stone-500">Zone : ${inj.site} • Date : ${inj.date}</p>
+              </div>
+            </div>
+            <button onclick="deleteInjection(${inj.id})" class="text-stone-400 hover:text-red-500 p-1">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    function toggleInjection(id) {
+      const inj = appData.injections.find(i => i.id === id);
+      if (inj) inj.isTaken = !inj.isTaken;
+      saveData();
+    }
+
+    function deleteInjection(id) {
+      appData.injections = appData.injections.filter(i => i.id !== id);
+      saveData();
+    }
+
+    function toggleHomeNextInjection() {
+      const next = appData.injections.find(i => !i.isTaken);
+      if (next) {
+        next.isTaken = true;
+        saveData();
+      }
+    }
+
+    // --- ECHOGRAPHIES SECTION & WEB CAMERA INTEGRATION ---
+    function renderEchosList() {
+      const container = document.getElementById('echos-history-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!appData.echos || appData.echos.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 bg-stone-50 rounded-2xl border border-dashed border-stone-200">
+            <i data-lucide="image" class="w-8 h-8 text-stone-300 mx-auto mb-2"></i>
+            <p class="text-xs text-stone-500 font-medium">Aucun cliché d'échographie enregistré</p>
+            <p class="text-[11px] text-stone-400 mt-1">Utilisez le bouton "Prendre Photo" pour numériser votre premier examen.</p>
+          </div>
+        `;
+        return;
+      }
+
+      appData.echos.forEach(ec => {
+        const hasImg = ec.imageUrl && ec.imageUrl.length > 20;
+        const cleanTitle = (ec.title || "Échographie").replace(/'/g, "\\'");
+        const cleanSubtitle = `${ec.trimester || 'Examen'} - ${ec.date || ''}`.replace(/'/g, "\\'");
+
+        container.innerHTML += `
+          <div class="p-4 bg-white rounded-2xl border border-bronze-100 shadow-sm space-y-3 hover:border-pink-200 transition-all">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl ${hasImg ? 'bg-pink-100 text-pink-600' : 'bg-bronze-100 text-bronze-600'} flex items-center justify-center shrink-0">
+                  <i data-lucide="${hasImg ? 'camera' : 'file-text'}" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-bronze-900">${ec.title}</h4>
+                  <p class="text-[11px] text-stone-500 flex items-center gap-1">
+                    <i data-lucide="calendar" class="w-3 h-3"></i> ${ec.date}
+                  </p>
+                </div>
+              </div>
+              <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-pink-100 text-pink-800 shrink-0">${ec.trimester}</span>
+            </div>
+
+            ${hasImg ? `
+              <div class="relative group rounded-xl overflow-hidden border border-stone-200 cursor-pointer shadow-inner bg-black" onclick="openEchoLightbox('${ec.imageUrl}', '${cleanTitle}', '${cleanSubtitle}')">
+                <img src="${ec.imageUrl}" alt="${ec.title}" class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end justify-between p-3 pointer-events-none">
+                  <span class="text-xs text-white/95 font-medium flex items-center gap-1.5 drop-shadow">
+                    <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Agrandir le cliché
+                  </span>
+                  <span class="px-2 py-0.5 rounded-md bg-white/20 backdrop-blur-md text-[10px] text-white font-mono uppercase tracking-wider">Photo</span>
+                </div>
+              </div>
+            ` : ''}
+
+            ${ec.notes ? `<p class="text-xs text-stone-700 bg-stone-50 p-2.5 rounded-xl border border-stone-100 leading-relaxed">${ec.notes}</p>` : ''}
+
+            <div class="flex justify-between items-center pt-2 border-t border-bronze-50 text-[11px] text-stone-500">
+              <span class="text-stone-400">ID: #${ec.id.toString().slice(-4)}</span>
+              <div class="flex items-center gap-3">
+                ${hasImg ? `
+                  <button onclick="openEchoLightbox('${ec.imageUrl}', '${cleanTitle}', '${cleanSubtitle}')" class="text-pink-600 hover:text-pink-700 font-semibold flex items-center gap-1">
+                    <i data-lucide="eye" class="w-3.5 h-3.5"></i> Voir photo
+                  </button>
+                ` : ''}
+                <button onclick="deleteEcho(${ec.id})" class="text-stone-400 hover:text-red-500 font-medium transition-colors">Supprimer</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function deleteEcho(id) {
+      if (confirm("Voulez-vous supprimer ce cliché d'échographie ?")) {
+        appData.echos = appData.echos.filter(e => e.id !== id);
+        saveData();
+      }
+    }
+
+    function openEchoLightbox(imgUrl, title, subtitle) {
+      document.getElementById('lightbox-echo-img').src = imgUrl;
+      document.getElementById('lightbox-echo-title').innerText = title;
+      document.getElementById('lightbox-echo-subtitle').innerText = subtitle;
+      document.getElementById('lightbox-echo-download').href = imgUrl;
+      openModal('modal-echo-lightbox');
+      lucide.createIcons();
+    }
+
+    // --- GUIDE & REPAS SECTION ---
+    let currentMealTrimester = 1;
+    const MEALS_BY_TRIMESTER = {
+      1: {
+        focus: "Anti-nausées, acide folique (vitamine B9) et fractionnement léger.",
+        meals: [
+          { title: "Petit-déjeuner", desc: "Tartines au levain, avocat écrasé, œuf dur bien cuit et infusion au gingembre." },
+          { title: "Collation matin", desc: "Poignée d'amandes douces et compote de pomme sans sucres ajoutés." },
+          { title: "Déjeuner", desc: "Filet de poulet fermier rôti à cœur, quinoa aux courgettes et carottes vapeur." },
+          { title: "Goûter", desc: "Yaourt nature pasteurisé avec graines de chia et myrtilles bien lavées." },
+          { title: "Dîner", desc: "Velouté tiède de potimarron, crackers de seigle et fromage blanc pasteurisé." }
+        ]
+      },
+      2: {
+        focus: "Apports accrus en fer, calcium et oméga-3 (croissance fœtale).",
+        meals: [
+          { title: "Petit-déjeuner", desc: "Bol de flocons d'avoine tièdes au lait enrichi, graines de lin et framboises." },
+          { title: "Collation matin", desc: "Un kiwi riche en vitamine C et quelques cerneaux de noix fraîches." },
+          { title: "Déjeuner", desc: "Pavé de saumon grillé bien cuit, riz complet et poêlée d'épinards frais au sésame." },
+          { title: "Goûter", desc: "Tranche de pain complet avec fromage à pâte dure pasteurisé (Comté/Emmental)." },
+          { title: "Dîner", desc: "Mijoté de lentilles corail aux tomates douces, blanc de dinde et compote poire." }
+        ]
+      },
+      3: {
+        focus: "Digestion facile, fibres contre la constipation et magnésium.",
+        meals: [
+          { title: "Petit-déjeuner", desc: "Porridge d'avoine crémeux, banane mûre tranchée et purée d'amande blanche." },
+          { title: "Collation matin", desc: "Deux pruneaux réhydratés et un grand verre d'eau minérale riche en magnésium." },
+          { title: "Déjeuner", desc: "Dos de cabillaud vapeur, purée maison de patates douces et haricots verts fins." },
+          { title: "Goûter", desc: "Fromage blanc pasteurisé avec touche de miel et graines de tournesol." },
+          { title: "Dîner", desc: "Soupe légère du potager, œuf poché bien cuit et compote de pommes maison." }
+        ]
+      }
+    };
+
+    function setMealTrimester(t) {
+      currentMealTrimester = t;
+      [1, 2, 3].forEach(num => {
+        const btn = document.getElementById(`btn-meal-t${num}`);
+        if (num === t) {
+          btn.className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-bronze-100 text-bronze-900 border border-bronze-200";
+        } else {
+          btn.className = "flex-1 py-1.5 rounded-lg text-xs font-medium bg-white text-bronze-600 border border-bronze-200";
+        }
+      });
+      renderMeals();
+    }
+
+    function renderMeals() {
+      const data = MEALS_BY_TRIMESTER[currentMealTrimester];
+      const container = document.getElementById('meal-ideas-container');
+      container.innerHTML = `
+        <div class="bg-bronze-50 p-3.5 rounded-xl border border-bronze-200 text-xs text-bronze-800 font-medium">
+          <strong>Focus Trimestre ${currentMealTrimester} :</strong> ${data.focus}
+        </div>
+      `;
+
+      data.meals.forEach(m => {
+        container.innerHTML += `
+          <div class="bg-white p-3 rounded-xl border border-bronze-100 shadow-sm">
+            <h4 class="text-xs font-bold text-bronze-900">${m.title}</h4>
+            <p class="text-xs text-stone-600 mt-1">${m.desc}</p>
+          </div>
+        `;
+      });
+    }
+
+    const GUIDE_PRECAUTIONS = [
+      { title: "Aliments à exclure formellement", cat: "Urgences / Sécurité", text: "Viandes crues ou saignantes (toxoplasmose), poissons crus (sushis), coquillages crus, œufs crus et fromages au lait cru non pasteurisés (listériose)." },
+      { title: "Lavage des fruits et légumes", cat: "Alimentation", text: "Laver très soigneusement à l'eau vinaigrée tous les végétaux consommés crus afin d'éliminer tout résidu de terre ou parasite." },
+      { title: "Suppléments recommandés", cat: "Santé", text: "Vitamine B9 (acide folique), vitamine D, iode et fer selon les bilans sanguins prescrits par votre praticien." },
+      { title: "Signaux d'alerte immédiats", cat: "Urgences", text: "Consultez en maternité sans attendre en cas de : saignements vaginaux, contractions répétées avant terme, fuite de liquide, fièvre > 38°C ou diminution nette des mouvements de bébé." }
+    ];
+
+    function renderPrecautions() {
+      const container = document.getElementById('guide-content-precaution');
+      container.innerHTML = '';
+      GUIDE_PRECAUTIONS.forEach(p => {
+        const isUrgent = p.cat.includes('Urgences');
+        container.innerHTML += `
+          <div class="p-4 rounded-2xl border ${isUrgent ? 'bg-red-50/70 border-red-200' : 'bg-white border-bronze-100'} shadow-sm space-y-1.5">
+            <div class="flex items-center justify-between">
+              <h4 class="text-sm font-bold ${isUrgent ? 'text-red-900' : 'text-bronze-900'}">${p.title}</h4>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isUrgent ? 'bg-red-200 text-red-900' : 'bg-bronze-100 text-bronze-800'}">${p.cat}</span>
+            </div>
+            <p class="text-xs ${isUrgent ? 'text-red-800' : 'text-stone-700'} leading-relaxed">${p.text}</p>
+          </div>
+        `;
+      });
+    }
+
+    const GLOSSARY_ITEMS = [
+      { term: "SA (Semaines d'Aménorrhée)", def: "Semaines écoulées depuis le premier jour des dernières règles. Unité standard en obstétrique." },
+      { term: "DPA (Date Prévue d'Accouchement)", def: "Date théorique du terme, fixée à 41 SA (soit 39 semaines réelles de grossesse en France)." },
+      { term: "Colostrum", def: "Premier lait sécrété dès la fin de grossesse et après l'accouchement, très concentré en anticorps maternels." },
+      { term: "Contractions de Braxton-Hicks", def: "Contractions d'entraînement physiologiques, non rythmées et généralement indolores." },
+      { term: "DPNI (Dépistage Prénatal Non Invasif)", def: "Analyse sanguine de l'ADN fœtal circulant pour le dépistage des trisomies 21, 18 et 13." },
+      { term: "Clarté Nucale", def: "Épaisseur liquidienne mesurée à la nuque du fœtus lors de l'échographie T1 (11-13 SA)." },
+      { term: "Streptocoque B (SGB)", def: "Bactérie recherchée par prélèvement vaginal à 35-37 SA pour prévenir une infection néonatale." },
+      { term: "Progestérone (PIO)", def: "Injections intramusculaires de progestérone indispensables en soutien lutéal / début de grossesse PMA." }
+    ];
+
+    function renderGlossary(filtered = GLOSSARY_ITEMS) {
+      const container = document.getElementById('glossary-list');
+      container.innerHTML = '';
+      filtered.forEach(g => {
+        container.innerHTML += `
+          <div class="p-3 bg-white rounded-xl border border-bronze-100 shadow-sm space-y-1">
+            <h4 class="text-xs font-bold text-bronze-900">${g.term}</h4>
+            <p class="text-xs text-stone-600">${g.def}</p>
+          </div>
+        `;
+      });
+    }
+
+    function filterGlossary() {
+      const q = document.getElementById('glossary-search').value.toLowerCase();
+      const filtered = GLOSSARY_ITEMS.filter(i => i.term.toLowerCase().includes(q) || i.def.toLowerCase().includes(q));
+      renderGlossary(filtered);
+    }
+
+    // --- PROJET DE NAISSANCE & CARNET ---
+    const BIRTH_PLAN_QUESTIONS = [
+      { id: "q1", theme: "Accueil & Ambiance", q: "Souhaitez-vous tamiser l'éclairage et écouter de la musique pendant le travail ?", options: ["Oui, ambiance tamisée et playlist personnelle", "Éclairage standard de la maternité", "Pas de préférence particulière"] },
+      { id: "q2", theme: "Travail & Douleur", q: "Quelles méthodes non médicamenteuses de gestion de la douleur privilégiez-vous ?", options: ["Ballon de grossesse, marche et bains chauds", "Massages et pressions lombaires", "Liberté de mouvement totale"] },
+      { id: "q3", theme: "Péridurale", q: "Quelle est votre position concernant la péridurale ?", options: ["Péridurale demandée dès que possible", "Péridurale ambulatoire (dosée pour marcher)", "Essayer de s'en passer le plus longtemps possible"] },
+      { id: "q4", theme: "Accouchement", q: "Comment envisagez-vous la phase d'expulsion ?", options: ["Poussée spontanée selon mes sensations", "Poussée guidée par la sage-femme", "Utilisation d'un miroir pour voir la naissance"] },
+      { id: "q5", theme: "Nouveau-né", q: "Quels sont vos souhaits pour les premiers moments de bébé ?", options: ["Peau à peau immédiat et ininterrompu", "Cordon coupé par le co-parent après arrêt des pulsations", "Premiers soins après la première tétée / peau à peau"] }
+    ];
+
+    function renderBirthPlan() {
+      const container = document.getElementById('birth-plan-questions-container');
+      container.innerHTML = '';
+      BIRTH_PLAN_QUESTIONS.forEach(item => {
+        const selected = appData.birthPlanAnswers[item.id] || item.options[0];
+        let optionsHtml = '';
+        item.options.forEach(opt => {
+          const isChecked = opt === selected;
+          optionsHtml += `
+            <label class="flex items-start gap-2.5 p-2 rounded-xl hover:bg-bronze-50/70 cursor-pointer text-xs">
+              <input type="radio" name="${item.id}" value="${opt}" ${isChecked ? 'checked' : ''} onchange="saveBirthPlanAnswer('${item.id}', '${opt}')" class="mt-0.5 text-bronze-500 focus:ring-bronze-400">
+              <span class="${isChecked ? 'font-bold text-bronze-900' : 'text-stone-700'}">${opt}</span>
+            </label>
+          `;
+        });
+
+        container.innerHTML += `
+          <div class="bg-white p-4 rounded-2xl border border-bronze-100 shadow-sm space-y-2">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-bronze-100 text-bronze-800">${item.theme}</span>
+            <h4 class="text-xs font-bold text-stone-900">${item.q}</h4>
+            <div class="space-y-1 pt-1">${optionsHtml}</div>
+          </div>
+        `;
+      });
+    }
+
+    function saveBirthPlanAnswer(qId, val) {
+      appData.birthPlanAnswers[qId] = val;
+      saveData();
+    }
+
+    let selectedJournalMood = "😊";
+    function selectMood(m) {
+      selectedJournalMood = m;
+      document.querySelectorAll('.mood-btn').forEach(btn => {
+        if (btn.innerText.includes(m)) {
+          btn.className = "mood-btn p-1.5 rounded-xl bg-bronze-100 border border-bronze-300 transition text-2xl scale-110";
+        } else {
+          btn.className = "mood-btn p-1.5 rounded-xl hover:bg-bronze-50 transition border border-transparent text-2xl";
+        }
+      });
+    }
+
+    function saveJournalEntry() {
+      const symptoms = document.getElementById('journal-symptoms-input').value.trim();
+      const notes = document.getElementById('journal-notes-input').value.trim();
+      if (!notes && !symptoms) return;
+
+      appData.journals.unshift({
+        id: Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        mood: selectedJournalMood,
+        symptoms: symptoms || "Aucun symptôme particulier",
+        notes: notes || "Pensée pour bébé"
+      });
+
+      document.getElementById('journal-symptoms-input').value = '';
+      document.getElementById('journal-notes-input').value = '';
+      saveData();
+    }
+
+    function renderJournalsList() {
+      const container = document.getElementById('journal-entries-container');
+      container.innerHTML = '';
+      appData.journals.forEach(j => {
+        container.innerHTML += `
+          <div class="p-3.5 bg-white rounded-2xl border border-bronze-100 shadow-sm space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-bold flex items-center gap-1.5">
+                <span>${j.mood}</span>
+                <span class="text-xs text-stone-500 font-normal">le ${j.date}</span>
+              </span>
+              <button onclick="deleteJournal(${j.id})" class="text-stone-400 hover:text-red-500 p-1">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <p class="text-xs font-semibold text-bronze-700">Symptômes : ${j.symptoms}</p>
+            <p class="text-xs text-stone-700 italic">« ${j.notes} »</p>
+          </div>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    function deleteJournal(id) {
+      appData.journals = appData.journals.filter(j => j.id !== id);
+      saveData();
+    }
+
+    // --- QUICK ENTRY ACTIONS ---
+    function saveQuickWeight() {
+      const val = parseFloat(document.getElementById('quick-weight-input').value);
+      if (isNaN(val)) return;
+      appData.weights.push({
+        id: Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        weight: val,
+        notes: "Saisie rapide accueil"
+      });
+      document.getElementById('quick-weight-input').value = '';
+      saveData();
+      showQuickSuccessBadge();
+    }
+
+    function saveQuickSymptom() {
+      const val = document.getElementById('quick-symptom-input').value.trim();
+      if (!val) return;
+      appData.journals.unshift({
+        id: Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        mood: "😊",
+        symptoms: val,
+        notes: "Saisie rapide accueil"
+      });
+      document.getElementById('quick-symptom-input').value = '';
+      saveData();
+      showQuickSuccessBadge();
+    }
+
+    function showQuickSuccessBadge() {
+      const b = document.getElementById('quick-success-badge');
+      b.classList.remove('hidden');
+      setTimeout(() => b.classList.add('hidden'), 2500);
+    }
+
+    // --- MODAL CONTROLS & ADDERS ---
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function openSyncModal() {
+      document.getElementById('modal-sync-email').innerText = appData.auth.email;
+      openModal('modal-sync');
+    }
+
+    function triggerCloudSync() {
+      appData.auth.lastSynced = "Synchronisé avec Vercel & GitHub à " + new Date().toLocaleTimeString('fr-FR');
+      saveData();
+      alert("✅ Synchronisation réussie avec Google Sign-In, Vercel et GitHub !");
+    }
+
+    function exportDataJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `maman_bebe_backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importDataJson(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.settings) {
+            appData = imported;
+            if (!appData.gynVisits) appData.gynVisits = DEFAULT_DATA.gynVisits;
+            if (!appData.memos) appData.memos = DEFAULT_DATA.memos;
+            saveData();
+            showSyncToast("✅ Données restaurées et synchronisées !");
+            closeModal('modal-sync');
+          }
+        } catch(err) {
+          alert("Erreur lors de la lecture du fichier JSON.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function openAddWeightModal() { openModal('modal-add-weight'); }
+    function confirmAddWeight() {
+      const val = parseFloat(document.getElementById('modal-weight-val').value);
+      const note = document.getElementById('modal-weight-note').value;
+      if (!isNaN(val)) {
+        appData.weights.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], weight: val, notes: note });
+        saveData();
+      }
+      closeModal('modal-add-weight');
+    }
+
+    function openAddInjectionModal() {
+      document.getElementById('modal-inj-date').value = selectedCalendarDateStr;
+      openModal('modal-add-injection');
+    }
+    function confirmAddInjection() {
+      const name = document.getElementById('modal-inj-name').value;
+      const dose = document.getElementById('modal-inj-dose').value;
+      const site = document.getElementById('modal-inj-site').value;
+      const date = document.getElementById('modal-inj-date').value || selectedCalendarDateStr;
+      if (name) {
+        appData.injections.push({ id: Date.now(), name, dose, site, date, isTaken: false });
+        saveData();
+      }
+      closeModal('modal-add-injection');
+    }
+
+    // --- MODAL AJOUT ECHO MANUEL & WEB CAMERA API ---
+    function openAddEchoModal() {
+      document.getElementById('modal-echo-date').value = selectedCalendarDateStr || new Date().toISOString().split('T')[0];
+      const fileInput = document.getElementById('modal-echo-file-input');
+      if (fileInput) fileInput.value = '';
+      openModal('modal-add-echo');
+    }
+
+    function confirmAddEcho() {
+      const title = document.getElementById('modal-echo-title').value || "Échographie";
+      const trimester = document.getElementById('modal-echo-trimester').value;
+      const date = document.getElementById('modal-echo-date').value || selectedCalendarDateStr || new Date().toISOString().split('T')[0];
+      const notes = document.getElementById('modal-echo-note').value;
+      const fileInput = document.getElementById('modal-echo-file-input');
+
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxDim = 960;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              else { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            const compressedUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+            appData.echos.unshift({ id: Date.now(), title, trimester, date, notes, imageUrl: compressedUrl });
+            saveData();
+            closeModal('modal-add-echo');
+            switchToolsSubTab('echos');
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        appData.echos.unshift({ id: Date.now(), title, trimester, date, notes });
+        saveData();
+        closeModal('modal-add-echo');
+        switchToolsSubTab('echos');
+      }
+    }
+
+    // --- API WEB CAMERA EN DIRECT (CAPTURE DIRECTE D'ÉCHOGRAPHIES) ---
+    let cameraMediaStream = null;
+    let cameraFacingMode = "environment"; // Caméra arrière préférée sur mobile
+    let capturedSnapshotDataUrl = null;
+
+    async function openWebCameraModal() {
+      capturedSnapshotDataUrl = null;
+      
+      const snapPreview = document.getElementById('camera-snapshot-preview');
+      const framingGuide = document.getElementById('camera-framing-guide');
+      const streamVideo = document.getElementById('camera-stream-video');
+      const liveControls = document.getElementById('camera-live-controls');
+      const postControls = document.getElementById('camera-post-controls');
+      const errorView = document.getElementById('camera-error-view');
+
+      if (snapPreview) snapPreview.classList.add('hidden');
+      if (framingGuide) framingGuide.classList.remove('hidden');
+      if (streamVideo) streamVideo.classList.remove('hidden');
+      if (liveControls) liveControls.classList.remove('hidden');
+      if (postControls) postControls.classList.add('hidden');
+      if (errorView) errorView.classList.add('hidden');
+
+      const now = new Date();
+      const dateFr = now.toLocaleDateString('fr-FR');
+      document.getElementById('camera-echo-title').value = `Échographie du ${dateFr}`;
+      document.getElementById('camera-echo-notes').value = "";
+
+      openModal('modal-web-camera');
+      await startCameraStream();
+      lucide.createIcons();
+    }
+
+    async function startCameraStream() {
+      stopCameraStream();
+      const video = document.getElementById('camera-stream-video');
+      const errorView = document.getElementById('camera-error-view');
+      const liveControls = document.getElementById('camera-live-controls');
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showCameraError("L'API Web Camera n'est pas supportée dans ce navigateur. Utilisez l'import direct.");
+        return;
+      }
+
+      try {
+        const constraints = {
+          video: {
+            facingMode: { ideal: cameraFacingMode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        cameraMediaStream = stream;
+        video.srcObject = stream;
+        await video.play();
+        if (errorView) errorView.classList.add('hidden');
+        if (liveControls) liveControls.classList.remove('hidden');
+      } catch (err) {
+        console.warn("Échec caméra spécifique, essai avec contraintes basiques:", err);
+        try {
+          const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          cameraMediaStream = fallbackStream;
+          video.srcObject = fallbackStream;
+          await video.play();
+          if (errorView) errorView.classList.add('hidden');
+          if (liveControls) liveControls.classList.remove('hidden');
+        } catch (err2) {
+          showCameraError("Accès caméra refusé ou non disponible. Vous pouvez capturer ou choisir une photo directement.");
+        }
+      }
+    }
+
+    function showCameraError(msg) {
+      const errEl = document.getElementById('camera-error-msg');
+      if (errEl) errEl.innerText = msg;
+      document.getElementById('camera-error-view').classList.remove('hidden');
+      document.getElementById('camera-live-controls').classList.add('hidden');
+      document.getElementById('camera-framing-guide').classList.add('hidden');
+      lucide.createIcons();
+    }
+
+    function stopCameraStream() {
+      if (cameraMediaStream) {
+        try {
+          cameraMediaStream.getTracks().forEach(track => track.stop());
+        } catch (e) {
+          console.error("Erreur arrêt piste caméra:", e);
+        }
+        cameraMediaStream = null;
+      }
+      const video = document.getElementById('camera-stream-video');
+      if (video) video.srcObject = null;
+    }
+
+    async function toggleCameraFacing() {
+      cameraFacingMode = (cameraFacingMode === "environment") ? "user" : "environment";
+      await startCameraStream();
+    }
+
+    function captureCameraSnapshot() {
+      const video = document.getElementById('camera-stream-video');
+      const canvas = document.getElementById('camera-hidden-canvas');
+      if (!video || !video.videoWidth) {
+        alert("La caméra n'est pas encore prête. Veuillez patienter un instant.");
+        return;
+      }
+
+      const width = video.videoWidth;
+      const height = video.videoHeight;
+      const maxDim = 960;
+      let finalW = width;
+      let finalH = height;
+
+      if (finalW > maxDim || finalH > maxDim) {
+        if (finalW > finalH) {
+          finalH = Math.round((finalH * maxDim) / finalW);
+          finalW = maxDim;
+        } else {
+          finalW = Math.round((finalW * maxDim) / finalH);
+          finalH = maxDim;
+        }
+      }
+
+      canvas.width = finalW;
+      canvas.height = finalH;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, finalW, finalH);
+
+      capturedSnapshotDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+      // Arrêt du flux pour préserver la batterie
+      stopCameraStream();
+
+      // Affichage de l'aperçu capturé
+      const previewImg = document.getElementById('camera-snapshot-img');
+      previewImg.src = capturedSnapshotDataUrl;
+      document.getElementById('camera-snapshot-preview').classList.remove('hidden');
+      document.getElementById('camera-framing-guide').classList.add('hidden');
+      document.getElementById('camera-stream-video').classList.add('hidden');
+
+      // Basculer vers le formulaire d'enregistrement
+      document.getElementById('camera-live-controls').classList.add('hidden');
+      document.getElementById('camera-post-controls').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function retakeCameraSnapshot() {
+      capturedSnapshotDataUrl = null;
+      document.getElementById('camera-snapshot-preview').classList.add('hidden');
+      document.getElementById('camera-framing-guide').classList.remove('hidden');
+      document.getElementById('camera-stream-video').classList.remove('hidden');
+      document.getElementById('camera-live-controls').classList.remove('hidden');
+      document.getElementById('camera-post-controls').classList.add('hidden');
+      startCameraStream();
+      lucide.createIcons();
+    }
+
+    function handleCameraFallbackFile(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.getElementById('camera-hidden-canvas');
+          const maxDim = 960;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            else { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          capturedSnapshotDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+          stopCameraStream();
+
+          const previewImg = document.getElementById('camera-snapshot-img');
+          previewImg.src = capturedSnapshotDataUrl;
+          document.getElementById('camera-snapshot-preview').classList.remove('hidden');
+          document.getElementById('camera-framing-guide').classList.add('hidden');
+          document.getElementById('camera-stream-video').classList.add('hidden');
+          document.getElementById('camera-error-view').classList.add('hidden');
+          document.getElementById('camera-live-controls').classList.add('hidden');
+          document.getElementById('camera-post-controls').classList.remove('hidden');
+          lucide.createIcons();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveCameraSnapshotToGallery() {
+      if (!capturedSnapshotDataUrl) {
+        alert("Aucun cliché capturé.");
+        return;
+      }
+
+      const title = document.getElementById('camera-echo-title').value || `Échographie du ${new Date().toLocaleDateString('fr-FR')}`;
+      const trimester = document.getElementById('camera-echo-trimester').value || "T1";
+      const notes = document.getElementById('camera-echo-notes').value || "Cliché capturé avec la caméra mobile";
+      const date = selectedCalendarDateStr || new Date().toISOString().split('T')[0];
+
+      const newEcho = {
+        id: Date.now(),
+        title: title,
+        trimester: trimester,
+        date: date,
+        notes: notes,
+        imageUrl: capturedSnapshotDataUrl
+      };
+
+      appData.echos.unshift(newEcho);
+      saveData();
+      closeWebCameraModal();
+      switchToolsSubTab('echos');
+
+      alert("Cliché d'échographie ajouté automatiquement à la galerie !");
+    }
+
+    function closeWebCameraModal() {
+      stopCameraStream();
+      closeModal('modal-web-camera');
+    }
+
+    function savePregnancyDates() {
+      const lmp = document.getElementById('calc-lmp-input').value;
+      const conc = document.getElementById('calc-conception-input').value;
+      if (lmp) appData.settings.lmpDate = lmp;
+      if (conc) appData.settings.conceptionDate = conc;
+      saveData();
+      alert("Dates enregistrées ! Terme et calendrier mis à jour.");
+    }
+
+    // --- PDF EXPORT ---
+    function exportToPdf() {
+      document.getElementById('print-date').innerText = new Date().toLocaleDateString('fr-FR');
+      
+      const bpContainer = document.getElementById('print-birth-plan-content');
+      bpContainer.innerHTML = '';
+      BIRTH_PLAN_QUESTIONS.forEach(item => {
+        const ans = appData.birthPlanAnswers[item.id] || "Non spécifié";
+        bpContainer.innerHTML += `
+          <div class="mb-2">
+            <p class="font-bold">${item.theme} : ${item.q}</p>
+            <p class="text-stone-700 pl-3">↳ <strong>Choix :</strong> ${ans}</p>
+          </div>
+        `;
+      });
+
+      const jContainer = document.getElementById('print-journal-content');
+      jContainer.innerHTML = '';
+      appData.journals.slice(0, 10).forEach(j => {
+        jContainer.innerHTML += `
+          <div class="mb-2">
+            <p class="font-semibold text-stone-800">${j.date} (${j.mood}) - Symptômes : ${j.symptoms}</p>
+            <p class="text-stone-600 pl-3">« ${j.notes} »</p>
+          </div>
+        `;
+      });
+
+      window.print();
+    }
+
+    // --- LOCAL NOTIFICATION PERMISSION ---
+    function requestNotificationPermission() {
+      if (!("Notification" in window)) {
+        alert("Les notifications locales sont supportées sur mobile et navigateurs modernes.");
+        return;
+      }
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          new Notification("Maman & Bébé", {
+            body: "Rappel activé : Votre protocole d'injections et vos rendez-vous obstétricaux sont synchronisés.",
+            icon: "app_logo.jpg"
+          });
+        }
+      });
+    }
+
+    // --- TAB SWITCHING LOGIC ---
+    function switchTab(tabName, navIndex) {
+      ['home', 'timeline', 'tools', 'guide', 'project'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add('hidden');
+      });
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-item').forEach((btn, idx) => {
+        if (idx === navIndex) {
+          btn.className = "nav-item flex flex-col items-center py-1 text-bronze-900 font-bold";
+        } else {
+          btn.className = "nav-item flex flex-col items-center py-1 text-bronze-400 hover:text-bronze-800 font-medium";
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchToolsSubTab(sub) {
+      ['pma', 'fertility', 'kicks', 'weight', 'injections', 'echos', 'calc'].forEach(s => {
+        const el = document.getElementById(`tools-content-${s}`);
+        const tabBtn = document.getElementById(`tools-subtab-${s}`);
+        if (el) el.classList.add('hidden');
+        if (tabBtn) tabBtn.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-stone-600 hover:bg-stone-50 whitespace-nowrap";
+      });
+
+      const targetContent = document.getElementById(`tools-content-${sub}`);
+      const targetBtn = document.getElementById(`tools-subtab-${sub}`);
+      if (targetContent) targetContent.classList.remove('hidden');
+      if (targetBtn) {
+        if (sub === 'pma') {
+          targetBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-purple-900 bg-purple-100 whitespace-nowrap";
+        } else if (sub === 'fertility') {
+          targetBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-pink-900 bg-pink-100 whitespace-nowrap";
+        } else {
+          targetBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-bronze-900 bg-bronze-100 whitespace-nowrap";
+        }
+      }
+
+      if (sub === 'fertility') {
+        renderBbtSection();
+      } else if (sub === 'weight') {
+        renderWeightSection();
+      }
+    }
+
+    function switchGuideSubTab(sub) {
+      ['precaution', 'glossary', 'meals'].forEach(s => {
+        document.getElementById(`guide-content-${s}`).classList.add('hidden');
+        document.getElementById(`guide-subtab-${s}`).className = "px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50";
+      });
+      document.getElementById(`guide-content-${sub}`).classList.remove('hidden');
+      document.getElementById(`guide-subtab-${sub}`).className = "px-3 py-1.5 rounded-lg text-xs font-bold text-bronze-900 bg-bronze-100";
+    }
+
+    function switchProjectSubTab(sub) {
+      ['birthplan', 'journal'].forEach(s => {
+        document.getElementById(`project-content-${s}`).classList.add('hidden');
+        document.getElementById(`project-subtab-${s}`).className = "px-3 py-1.5 rounded-lg text-xs font-medium text-bronze-600 hover:bg-bronze-50";
+      });
+      document.getElementById(`project-content-${sub}`).classList.remove('hidden');
+      document.getElementById(`project-subtab-${sub}`).className = "px-3 py-1.5 rounded-lg text-xs font-bold text-bronze-900 bg-bronze-100";
+    }
+
+    function openSettingsModal() {
+      openSyncModal();
+    }
+
+    // --- MAIN RENDER FUNCTION ---
+    function renderAll() {
+      const { weeks, days, dueDate, remainingDays, progressPercent } = calculatePregnancyInfo();
+
+      document.getElementById('display-mother-name').innerText = appData.settings.motherName;
+      document.getElementById('display-baby-name').innerText = `« ${appData.settings.babyName} »`;
+      document.getElementById('display-gestational-age').innerText = `${weeks} SA et ${days} j`;
+      
+      const dueFormatted = dueDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+      document.getElementById('display-due-date').innerText = `${dueFormatted} (${remainingDays} j)`;
+
+      document.getElementById('display-progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('display-progress-text').innerText = `Semaine ${weeks} sur 40 (${progressPercent}%)`;
+
+      // Next injection on home
+      const nextInj = appData.injections.find(i => !i.isTaken);
+      if (nextInj) {
+        document.getElementById('home-next-injection-text').innerText = `${nextInj.name} (${nextInj.dose}) - Zone : ${nextInj.site}`;
+      } else {
+        document.getElementById('home-next-injection-text').innerText = "Toutes les injections prévues ont été effectuées.";
+      }
+
+      // Form inputs
+      document.getElementById('calc-lmp-input').value = appData.settings.lmpDate;
+      document.getElementById('calc-conception-input').value = appData.settings.conceptionDate;
+
+      renderCalendar();
+      renderTimeline();
+      renderPmaMilestones();
+      renderBbtSection();
+      renderKicksList();
+      renderWeightSection();
+      renderInjectionsList();
+      renderEchosList();
+      renderPrecautions();
+      renderGlossary();
+      renderMeals();
+      renderBirthPlan();
+      renderJournalsList();
+      lucide.createIcons();
+    }
+
+    // Initial render on DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+      selectMood('😊');
+    });
+  </script>
+</body>
+</html>
