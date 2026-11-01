@@ -11,6 +11,31 @@
   <!-- Tailwind CSS imported from src/index.css -->
   <link rel="stylesheet" href="src/index.css">
   
+  <!-- Tailwind CSS CDN for instant styling without local preprocessors -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wood: {
+              50: '#FFFDFB', 100: '#F7F1E5', 200: '#E2D3B8', 300: '#BF9E78', 400: '#B8976C',
+              500: '#8C6A47', 600: '#4A3525', 700: '#3B2314', 800: '#2C1E14', 900: '#DFC8A3'
+            },
+            bronze: {
+              50: '#FFFDFB', 100: '#F7F1E5', 200: '#E2D3B8', 300: '#BF9E78', 400: '#B8976C',
+              500: '#8C6A47', 600: '#4A3525', 700: '#3B2314', 800: '#2C1E14', 900: '#DFC8A3'
+            },
+            lightbrown: {
+              50: '#FFFDFB', 100: '#F7F1E5', 200: '#E2D3B8', 300: '#BF9E78', 400: '#B8976C',
+              500: '#8C6A47', 600: '#4A3525', 700: '#3B2314', 800: '#2C1E14', 900: '#DFC8A3'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   

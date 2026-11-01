@@ -14,27 +14,29 @@ import androidx.compose.ui.res.painterResource
 import com.example.R
 import kotlinx.coroutines.delay
 
+import androidx.compose.foundation.clickable
+
 @Composable
 fun SplashScreen(
   onSplashFinished: () -> Unit
 ) {
-  var startAnimation by remember { mutableStateOf(false) }
+  var startAnimation by remember { mutableStateOf(true) }
   val alphaAnim = animateFloatAsState(
-    targetValue = if (startAnimation) 1f else 0f,
-    animationSpec = tween(durationMillis = 1000),
+    targetValue = if (startAnimation) 1f else 0.8f,
+    animationSpec = tween(durationMillis = 600),
     label = "splash_alpha"
   )
 
   LaunchedEffect(key1 = true) {
-    startAnimation = true
-    delay(1800) // Show splash for 1.8 seconds
+    delay(1000) // Show splash for 1.0 second
     onSplashFinished()
   }
 
   Box(
     modifier = Modifier
       .fillMaxSize()
-      .background(Color(0xFF121212)),
+      .background(Color(0xFFE2D3B8))
+      .clickable { onSplashFinished() },
     contentAlignment = Alignment.Center
   ) {
     Image(
