@@ -109,6 +109,20 @@ class MainActivity : ComponentActivity() {
                     )
                   }
 
+                  // Settings button on top
+                  IconButton(
+                    onClick = {
+                      showSettingsScreen = true
+                    },
+                    modifier = Modifier.testTag("btn_top_settings")
+                  ) {
+                    Icon(
+                      imageVector = Icons.Default.Settings,
+                      contentDescription = if (isEnglish) "Settings" else "Réglages",
+                      tint = Color(0xFF3B2314)
+                    )
+                  }
+
                   // Dual Language Switcher button visible and active across the ENTIRE app!
                   Surface(
                     onClick = { toggleLanguage() },

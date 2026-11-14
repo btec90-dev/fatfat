@@ -547,7 +547,15 @@ fun UltrasoundSection(
   }
 
   fun triggerCamera() {
-    directCameraLauncher.launch(null)
+    try {
+      directCameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+    } catch (e: Exception) {
+      try {
+        directCameraLauncher.launch(null)
+      } catch (ex: Exception) {
+        android.widget.Toast.makeText(context, if (isEnglish) "Camera error" else "Erreur appareil photo", android.widget.Toast.LENGTH_SHORT).show()
+      }
+    }
   }
 
   LazyColumn(

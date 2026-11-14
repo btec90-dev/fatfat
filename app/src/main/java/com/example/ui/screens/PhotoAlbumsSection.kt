@@ -89,6 +89,36 @@ fun PhotoAlbumsSection(
     }
   }
 
+  val directCameraPermissionLauncher = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.RequestPermission()
+  ) { isGranted ->
+    if (isGranted) {
+      try {
+        directCameraLauncher.launch(null)
+      } catch (e: Exception) {
+        Toast.makeText(context, if (isEnglish) "Camera unavailable: ${e.localizedMessage}" else "Appareil photo indisponible", Toast.LENGTH_SHORT).show()
+      }
+    } else {
+      Toast.makeText(
+        context,
+        if (isEnglish) "Camera permission is required" else "Permission appareil photo requise",
+        Toast.LENGTH_SHORT
+      ).show()
+    }
+  }
+
+  fun triggerCamera() {
+    try {
+      directCameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+    } catch (e: Exception) {
+      try {
+        directCameraLauncher.launch(null)
+      } catch (ex: Exception) {
+        Toast.makeText(context, if (isEnglish) "Camera error" else "Erreur appareil photo", Toast.LENGTH_SHORT).show()
+      }
+    }
+  }
+
   LazyColumn(
     modifier = Modifier
       .fillMaxSize()
@@ -134,7 +164,7 @@ fun PhotoAlbumsSection(
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
               FilledTonalIconButton(
-                onClick = { directCameraLauncher.launch(null) },
+                onClick = { triggerCamera() },
                 modifier = Modifier.size(40.dp)
               ) {
                 Icon(

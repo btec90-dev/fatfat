@@ -1,0 +1,137 @@
+================================================================================
+MAMAN & BÉBÉ — COMPREHENSIVE APPLICATION CONTENTS & DOCUMENTATION SUMMARY
+================================================================================
+
+1. APPLICATION IDENTITY & NAVIGATION
+--------------------------------------------------------------------------------
+- Application Title: Maman & Bébé / Mom & Baby
+- Package ID: com.aistudio.grossesse.mbtxyz
+- Cloud Sync Status: Active (410bala@gmail.com)
+- Primary Navigation Tabs & Bottom Bar:
+  1. Accueil (Home): Countdown, daily protocol, upcoming reminders, maternal vitals, and quick actions.
+  2. Chronologie (Timeline): Fetal and maternal development from week 1 to 41 SA, obstetric milestones, 3D Bump view.
+  3. IVF/PMA Dedicated Tab: Instant 1-tap bottom bar navigation (`💊 IVF/PMA`) for the dedicated IVF Journey & Protocol module.
+  4. Outils & Constantes (Suivi): ACOG blood pressure monitor, blood glucose, weight logs, fetal kick counter, contraction timer, medication safety database, and IVF protocol manager.
+  5. Guide & Glossaire: Nutritional rules, hygiene, emergency red flags, and obstetric definitions.
+  6. Bébé & Journal: Birth plan, hospital bag checklists, nursing/diaper logs, and ultrasound photo gallery.
+  7. Galerie: Consolidated ultrasound scans, bump photos, and exportable PDF medical dossiers.
+
+--------------------------------------------------------------------------------
+DEDICATED "IVF JOURNEY & PROTOCOL" MODULE SPECIFICATION
+--------------------------------------------------------------------------------
+Architecture & Data Model:
+- State Controller: Managed via `ivfController.js` and `appData.pmaMilestones` with local persistence (`localStorage`) and Cloud sync.
+- Interactive Modals & Controls: Inline status toggles, "+ Ajouter une étape / Visite" button, and modal editing for Date, Time, Status (Pending, In Progress, Completed), Instructions/Dosages, and Clinic Location.
+- Dosing Reminder Banner: Live active alert reflecting the current estrogen schedule (Nov 6–9: 2x/day; Nov 10+: 3x/day; Next Clinic Visit: Nov 12).
+- Blastocyst Transfer Pregnancy Synchronization:
+  * Formula:
+    Gestational Age = (Current Date - Transfer Date) + 19 days
+    Estimated Due Date (EDD) = Transfer Date + 266 days
+  * Confirming the FET transfer event automatically calculates gestational age, updates the due date countdown, and syncs milestones into the main pregnancy timeline.
+
+Structured Milestones Dataset:
+* Phase 1: Stimulation & Retrieval (Status: Completed)
+  - 2026-09-19: Ovarian suppression initiated (Nortrel daily). Location: Home.
+  - 2026-09-21: Ovarian stimulation initiated (Gonal-F 150 IU + Menopur 150 IU). Location: Home.
+  - 2026-09-23 at 07:00: Monitoring Visit 1 (Bloodwork & Ultrasound). Location: RMA of New York.
+  - 2026-09-25: Antagonist added (Cetrotide 0.25 mg daily). Location: Home.
+  - 2026-09-27 at 07:30: Monitoring Visit 2. Location: RMA of New York.
+  - 2026-09-29 at 23:00: Trigger injection administered precisely at designated time. Location: Home.
+  - 2026-09-30 at 08:45: Pre-retrieval lab check (trigger absorption & baseline progesterone). Location: RMA of New York.
+  - 2026-10-01 at 07:30: Egg Retrieval completed under conscious sedation (42 oocytes retrieved). Location: RMA Surgical Suite.
+
+* Phase 2: Embryology & Lab Results (Status: Completed)
+  - 2026-10-02: ICSI fertilization report (42 retrieved -> 34 mature -> 11 fertilized). Location: Embryology Lab.
+  - 2026-10-06 to 2026-10-08: Blastocyst culture & trophectoderm biopsy. Location: Embryology Lab.
+  - 2026-10-09: Laboratory yield (8 blastocysts biopsied and vitrified). Location: Embryology Lab.
+  - 2026-10-11 at 09:15: Baseline FET ultrasound/labs & Nortrel resumed. Location: RMA of New York.
+  - 2026-10-13: Thaw plan & embryo selection submitted (Selected: Male euploid embryo). Location: Clinic.
+  - 2026-10-25: PGT-A results received (5 euploid / normal embryos confirmed). Location: Genetic Lab.
+
+* Phase 3: Surgical Prep & Uterine Optimization (Status: Completed)
+  - 2026-10-15: Initial assessment / scheduled prep. Location: Clinic.
+  - 2026-10-28 at 06:15: Operative Hysteroscopy (debris removal completed) at Gramercy Surgery Center (380 2nd Ave, Suite 1000, 10th Fl, New York, NY 10010).
+
+* Phase 4: Endometrial Preparation & FET (Status: Active / In Progress)
+  - 2026-11-05: Baseline monitoring (Bloodwork, Ultrasound & Doctor Consultation completed). Location: Clinic.
+  - 2026-11-06: Start oral/transdermal Estrogen Protocol:
+    * Days 1–4 (Nov 6–9): Oral estrogen pills 2x daily.
+    * Starting Day 5 (Nov 10 onward): Increase to 3x daily. Location: Home.
+  - 2026-11-12 at 08:30: Clinic monitoring appointment (Endometrial thickness & bloodwork check). Location: Clinic.
+  - Projected Mid/Late November 2026 (Target: 2026-11-20 at 11:00): Frozen Embryo Transfer (FET) of 1 male euploid blastocyst (Pending lining check; syncs EDD when checked). Location: Clinic.
+
+2. PMA / IVF PROTOCOL & CLINIC COORDINATION
+--------------------------------------------------------------------------------
+- Protocol Name: Protocole Antagoniste (FIV/ICSI)
+- Daily Dosages:
+  * Morning (08:00): Cetrotide 0.25 mg (subcutaneous abdominal injection)
+  * Evening (19:00): Gonal-F 150 UI (subcutaneous abdominal injection)
+  * Night (20:00): Progesterone PIO 50 mg (intramuscular gluteal injection or Utrogestan 200 mg)
+- Clinic Contacts:
+  * Center Name: Centre PMA (RMA of New York)
+  * Phone: +33 1 42 16 00 00 / Emergency: +33 1 42 16 00 01
+  * Coordinator Email: coordination.pma@hopital.fr
+
+3. 41-WEEK PREGNANCY TIMELINE
+--------------------------------------------------------------------------------
+- Covers Week 1 to Week 40+ SA with fetal size comparisons, fetal developmental changes, maternal physiological shifts, and medical milestones (NIPT/DPNI, T1/T2/T3 scans, OGTT gestational diabetes screening, GBS swab, and term monitoring).
+
+4. KEY MEDICAL CONSULTATIONS & OBSTETRIC MILESTONES
+--------------------------------------------------------------------------------
+- Weeks 8-10: OBGYN Consultation (Fertility center discharge, hormone weaning)
+- Weeks 11-13: 1st Trimester Scan & NIPT / DPNI
+- Weeks 16-18: 4th Month Prenatal Visit & lab panel
+- Weeks 20-22: 2nd Trimester Morphological Scan T2 (detailed organ-by-organ evaluation)
+- Weeks 24-28: 75g Glucose Tolerance Test (OGTT / HGPO) & 6th Month Check
+- Weeks 30-32: 3rd Trimester Growth Scan T3 & Doppler
+- Weeks 34-36: Anesthesia Consultation & Group B Streptococcus (GBS) Vaginal Swab
+- Weeks 37-40+: Term Consultations & Serene Delivery
+
+5. MATERNAL VITALS & CLINICAL DIAGNOSTIC ENGINE (ACOG & CDC)
+--------------------------------------------------------------------------------
+- Blood Pressure Thresholds (ACOG):
+  * Optimal: < 120 / < 80 mmHg
+  * Elevated: 120-129 / < 80 mmHg
+  * Stage 1 HTN: 130-139 / 80-89 mmHg
+  * Gestational HTN Stage 2: 140-159 / 90-109 mmHg
+  * Critical Alert (Severe HTN / Preeclampsia): >= 160 / >= 110 mmHg (Immediate maternal care required)
+- Blood Glucose Targets (ACOG & ADA):
+  * Fasting: <= 95 mg/dL
+  * 1h Post-Prandial: <= 140 mg/dL
+  * 2h Post-Prandial: <= 120 mg/dL
+  * Hypoglycemia: < 60 mg/dL (Consume 15g fast-acting carbs)
+- Weight Gain Tracking:
+  * Rapid fluid retention warning: > 1.5 kg gain in < 7 days during T2/T3.
+
+6. PREGNANCY GUIDE (MEDICAL ADVICE & HYGIENE)
+--------------------------------------------------------------------------------
+- Prohibited Foods: Raw meats/fish, unpasteurized dairy, raw eggs, cured charcuterie (toxoplasmosis and listeriosis prevention).
+- Hygiene: Washing raw fruits and vegetables with vinegared water.
+- Supplements: Folic acid (Vitamin B9) indispensable in pre-conception and T1, Vitamin D3, iron, and iodine.
+- Hydration: 1.5 to 2 liters of water daily. Zero alcohol. Limit caffeine to <200mg/day.
+- Emergency Red Flags: Vaginal bleeding, contractions before 37 SA, fluid leakage, severe headaches with visual disturbances, sudden edema, decreased fetal movement, fever > 38°C.
+
+7. OBSTETRIC MEDICAL GLOSSARY
+--------------------------------------------------------------------------------
+- SA (Semaines d'Aménorrhée), DPA (Date Prévue d'Accouchement), Colostrum, Amniocentesis, Braxton-Hicks contractions, NIPT / DPNI, Nuchal Translucency, Group B Streptococcus (GBS), Progesterone PIO, Post-term.
+
+8. MATERNITY BAG & BABY TROUSSEAU CHECKLISTS
+--------------------------------------------------------------------------------
+- Baby Essentials: Two-way zip footies (0-3M), kimono bodysuits, swaddles/sleep sacks, infant car seat with Isofix base, bassinet with fitted breathable sheets, and infant first-aid kit.
+- Mom Post-Partum & Hospital Bag: Maternity bag with long charging cables and ID, perineal recovery kit (peri bottle, witch hazel pads, disposable briefs), nursing bras, lanoline nipple balm, nursing pillow.
+
+9. BIRTH PROJECT QUESTIONNAIRE (PROJET DE NAISSANCE)
+--------------------------------------------------------------------------------
+- 5 Themes: Reception & lighting/music, Labor & non-pharmacological pain relief (birth ball, massage), Epidural preferences (ambulatory vs standard), Expulsion/pushing phase positions, Newborn care (immediate skin-to-skin, delayed cord clamping, delayed initial bath).
+
+10. MEDICATION SAFETY DATABASE (28 SUBSTANCES EVALUATED)
+--------------------------------------------------------------------------------
+- Covers Paracetamol (Safe), Ibuprofen (Unsafe/Avoid), Phloroglucinol/Spasfon (Safe), Low-dose Aspirin (Caution/Recommended), Amoxicillin (Safe), Isotretinoin/Accutane (Unsafe - Major Teratogen), Retinoids (Unsafe), ACE Inhibitors (Unsafe), Lovenox (Safe), Progesterone (Safe), Gaviscon (Safe), Omeprazole (Safe), Cetirizine (Safe), Pseudoephedrine (Unsafe), Hot tubs/saunas (Unsafe), Caffeine >200mg (Caution), Alcohol (Unsafe - Zero Tolerance), Folic Acid (Safe), Sertraline (Caution), Valproic Acid (Unsafe), Doxylamine + B6 (Safe), Metformin (Safe), Vitamin D3 (Safe), Doxycycline (Unsafe), Ciprofloxacin (Unsafe), Nicotine/Tobacco (Unsafe), Iron (Safe), Tramadol/Codeine (Caution).
+
+11. BABY DAILY CARE TRACKING TOOLS
+--------------------------------------------------------------------------------
+- Nursing session timer, formula feeding log, pumping recorder, diaper log (wet/stool tracking), baby sleep tracker, fetal kick counter (10 movements protocol), and contraction timer (5-1-1 rule).
+
+================================================================================
+End of Application Summary Document
+================================================================================
